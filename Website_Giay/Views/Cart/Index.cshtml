@@ -1,0 +1,174 @@
+@model Website_Giay.ViewModels.CartViewModel
+@{
+    ViewBag.Title = "Giỏ hàng";
+    ViewBag.PageName = "cart";
+    ViewBag.IsSubPage = true;
+}
+
+@section styles {
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/pages/cart.css")">
+}
+
+<!-- BREADCRUMB -->
+<nav class="checkout-breadcrumb py-3" aria-label="Đường dẫn">
+    <div class="container">
+        <ol class="breadcrumb bg-transparent p-0 mb-0">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")" class="text-decoration-none text-secondary">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Product")" class="text-decoration-none text-secondary">Sản phẩm</a></li>
+            <li class="breadcrumb-item active text-dark fw-bold" aria-current="page">Giỏ hàng</li>
+        </ol>
+    </div>
+</nav>
+
+<!-- MAIN CART CONTENT -->
+<main class="cart-page py-4">
+    <div class="container">
+        <div class="row gx-4 gy-4">
+            <!-- Danh sách sản phẩm trong giỏ -->
+            <section class="col-lg-8">
+                <div class="checkout-card p-4 rounded-4 bg-white shadow-sm">
+                    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+                        <h2 class="fs-4 fw-bold mb-0">Giỏ hàng của bạn</h2>
+                        <span class="text-secondary">(@Model.TotalQuantity sản phẩm)</span>
+                    </div>
+
+                    @if (Model.Items != null && Model.Items.Any())
+                    {
+                        <div class="d-flex flex-column gap-3">
+                            @foreach (var item in Model.Items)
+                            {
+                                <div class="item-gio-hang-row p-3 border rounded-3 d-flex flex-wrap align-items-center justify-content-between gap-3">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <a href="@Url.Action("Detail", "Product", new { id = item.ProductId })">
+                                            <img src="@Url.Content(item.ImageUrl ?? "~/assets/img/default.png")" alt="@item.ProductName" class="rounded-3" style="width: 85px; height: 85px; object-fit: cover;">
+                                        </a>
+                                        <div>
+                                            <h5 class="fs-6 fw-bold mb-1">
+                                                <a href="@Url.Action("Detail", "Product", new { id = item.ProductId })" class="text-decoration-none text-dark">
+                                                    @item.ProductName
+                                                </a>
+                                            </h5>
+                                            <div class="small text-secondary mb-1">
+                                                <span>Màu: <strong class="text-dark">@item.SelectedColor</strong></span> | 
+                                                <span>Size: <strong class="text-dark">@item.SelectedSize</strong></span>
+                                            </div>
+                                            <span class="text-danger fw-bold fs-6">@item.Price.ToString("N0")đ</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex align-items-center gap-3">
+                                        <!-- Số lượng -->
+                                        <div class="chon-so-luong d-inline-flex border rounded-3 overflow-hidden">
+                                            <button class="btn btn-light btn-sm px-2 py-1" type="button" onclick="capNhatSoLuong(@item.ProductId, '@item.SelectedColor', '@item.SelectedSize', @(item.Quantity - 1))">
+                                                <i class="bi bi-dash"></i>
+                                            </button>
+                                            <input class="form-control form-control-sm text-center border-0 fw-bold bg-white" style="width: 45px;" type="number" value="@item.Quantity" readonly>
+                                            <button class="btn btn-light btn-sm px-2 py-1" type="button" onclick="capNhatSoLuong(@item.ProductId, '@item.SelectedColor', '@item.SelectedSize', @(item.Quantity + 1))">
+                                                <i class="bi bi-plus"></i>
+                                            </button>
+                                        </div>
+
+                                        <!-- Thành tiền -->
+                                        <div class="text-end" style="min-width: 110px;">
+                                            <strong class="fs-6 text-dark d-block">@item.Total.ToString("N0")đ</strong>
+                                        </div>
+
+                                        <!-- Nút xóa -->
+                                        <button class="btn btn-outline-danger btn-sm rounded-circle p-2" type="button" onclick="xoaKhoiGio(@item.ProductId, '@item.SelectedColor', '@item.SelectedSize')" title="Xóa khỏi giỏ hàng">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="bi bi-bag-x fs-1 text-secondary d-block mb-3"></i>
+                            <h4 class="fw-bold">Giỏ hàng của bạn đang trống</h4>
+                            <p class="text-secondary mb-4">Hãy khám phá thêm hàng ngàn mẫu sneaker chính hãng tại SoleStyle.</p>
+                            <a href="@Url.Action("Index", "Product")" class="btn btn-dark px-4 py-2">
+                                Tiếp tục mua sắm
+                            </a>
+                        </div>
+                    }
+                </div>
+            </section>
+
+            <!-- Tóm tắt đơn hàng bên phải -->
+            <aside class="col-lg-4">
+                <div class="checkout-summary-card p-4 rounded-4 bg-white shadow-sm sticky-top" style="top: 90px;">
+                    <h2 class="fs-5 fw-bold mb-3 pb-2 border-bottom">Tóm tắt đơn hàng</h2>
+                    
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-secondary">Tạm tính:</span>
+                        <strong class="text-dark">@Model.SubTotal.ToString("N0")đ</strong>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-secondary">Phí vận chuyển:</span>
+                        <strong class="@(Model.ShippingFee == 0 ? "text-success" : "text-dark")">
+                            @(Model.ShippingFee == 0 ? "Miễn phí toàn quốc" : Model.ShippingFee.ToString("N0") + "đ")
+                        </strong>
+                    </div>
+
+                    <div class="summary-row mb-4 pt-3 border-top d-flex justify-content-between align-items-center">
+                        <span class="fs-5 fw-bold text-dark">Tổng cộng:</span>
+                        <strong class="fs-4 text-danger fw-bolder">@Model.TotalAmount.ToString("N0")đ</strong>
+                    </div>
+
+                    @if (Model.Items != null && Model.Items.Any())
+                    {
+                        <a href="@Url.Action("Checkout", "Cart")" class="btn btn-dark w-100 py-3 fw-bold rounded-3 mb-2">
+                            Tiến hành thanh toán
+                        </a>
+                    }
+                    else
+                    {
+                        <button class="btn btn-secondary w-100 py-3 fw-bold rounded-3 mb-2" disabled>
+                            Tiến hành thanh toán
+                        </button>
+                    }
+
+                    <a href="@Url.Action("Index", "Product")" class="btn btn-outline-dark w-100 py-2 mt-2">
+                        Tiếp tục mua sắm
+                    </a>
+                </div>
+            </aside>
+        </div>
+    </div>
+</main>
+
+@section scripts {
+    <script>
+        function capNhatSoLuong(id, color, size, qty) {
+            fetch("@Url.Action("UpdateQuantity", "Cart")", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: `productId=${id}&color=${encodeURIComponent(color)}&size=${encodeURIComponent(size)}&quantity=${qty}`
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.reload();
+                }
+            });
+        }
+
+        function xoaKhoiGio(id, color, size) {
+            if (!confirm("Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?")) return;
+            fetch("@Url.Action("RemoveItem", "Cart")", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: `productId=${id}&color=${encodeURIComponent(color)}&size=${encodeURIComponent(size)}`
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.reload();
+                }
+            });
+        }
+    </script>
+}

@@ -1,0 +1,414 @@
+@model Website_Giay.ViewModels.HomeViewModel
+@using System.Linq
+@{
+    ViewBag.Title = "Trang chủ";
+    ViewBag.PageName = "home";
+    ViewBag.IsSubPage = false;
+
+    string qBrand = Request.QueryString["brand"];
+    string qCategory = Request.QueryString["category"];
+    string qAudience = Request.QueryString["audience"];
+    string qPrice = Request.QueryString["price"];
+    string qSort = Request.QueryString["sort"];
+}
+
+@section styles {
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/pages/home.css")">
+}
+<!-- HERO SLIDER -->
+<section class="hero-slider" aria-label="Sản phẩm nổi bật">
+    <div class="slider-container" id="sliderContainer">
+        <!-- Slide 1 -->
+        <article class="slide active">
+            <img src="@Url.Content("~/assets/img/NikeAirJordan1Retro.png")" alt="Nike Air Jordan 1 Retro" class="anh-nen-slide">
+            <div class="lop-phu-toi"></div>
+            <div class="container noi-dung-slide-moi">
+                <div class="slide-content">
+                    <h2>Nike Air Jordan 1 Retro</h2>
+                    <p>Huyền thoại bóng rổ, phong cách đường phố</p>
+                    <a href="@Url.Action("Detail", "Product", new { id = 1 })"
+                       class="btn btn-danger nut-mua-slider" data-ma-san-pham="1">Mua ngay</a>
+                </div>
+            </div>
+        </article>
+
+        <!-- Slide 2 -->
+        <article class="slide">
+            <img src="@Url.Content("~/Content/assets/img/AdidasUltraboost2026.png")" alt="Adidas Ultraboost 2026" class="anh-nen-slide">
+            <div class="lop-phu-toi"></div>
+            <div class="container noi-dung-slide-moi">
+                <div class="slide-content">
+                    <h2>Adidas Ultraboost 2026</h2>
+                    <p>Công nghệ Boost mới nhất - Giảm 25%</p>
+                    <a href="@Url.Action("Detail", "Product", new { id = 2 })"
+                       class="btn btn-danger nut-mua-slider" data-ma-san-pham="2">Mua ngay</a>
+                </div>
+            </div>
+        </article>
+
+        <!-- Slide 3 -->
+        <article class="slide">
+            <img src="@Url.Content("~/Content/assets/img/ConverseChuckTaylorClassic.png")" alt="Converse Chuck Taylor Classic" class="anh-nen-slide">
+            <div class="lop-phu-toi"></div>
+            <div class="container noi-dung-slide-moi">
+                <div class="slide-content">
+                    <h2>Converse Chuck Taylor Classic</h2>
+                    <p>Biểu tượng văn hóa thế giới</p>
+                    <a href="@Url.Action("Detail", "Product", new { id = 11 })"
+                       class="btn btn-danger nut-mua-slider" data-ma-san-pham="11">Mua ngay</a>
+                </div>
+            </div>
+        </article>
+    </div>
+
+    <!-- Nút chuyển Slide Trái / Phải -->
+    <button class="slider-btn prev" id="prevBtn" type="button" aria-label="Ảnh trước">
+        <i class="bi bi-chevron-left"></i>
+    </button>
+    <button class="slider-btn next" id="nextBtn" type="button" aria-label="Ảnh sau">
+        <i class="bi bi-chevron-right"></i>
+    </button>
+
+    <!-- Chấm tròn chuyển slide -->
+    <div class="slider-dots" id="sliderDots" aria-label="Chọn banner"></div>
+</section>
+<!-- THƯƠNG HIỆU -->
+<section id="khu-uu-dai" class="khu-thuong-hieu" aria-label="Lọc theo thương hiệu">
+    <div class="container">
+        <div class="dau-khu-thuong-hieu">
+            <div>
+                <p class="chu-nho">Thương hiệu</p>
+                <h2>Chọn nhanh theo logo</h2>
+            </div>
+            <a class="btn btn-outline-dark" href="@Url.Action("Index", "Product")">Tất cả sản phẩm</a>
+        </div>
+        <div class="hang-thuong-hieu">
+            @foreach (var b in Model.Brands)
+            {
+                <a class="nut-thuong-hieu text-decoration-none" href="@Url.Action("Index", "Product", new { brand = b.BrandName })">
+                    <span class="khung-logo-thuong-hieu">
+                        <img src="@Url.Content(b.LogoUrl ?? "~/assets/img/logoNike.png")" alt="@b.BrandName">
+                    </span>
+                    <span>@b.BrandName</span>
+                </a>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- DANH MỤC SẢN PHẨM -->
+<section id="khu-san-pham" class="khu-san-pham py-5">
+    <div class="container">
+        <div class="tieu-de-khu-vuc">
+            <div>
+                <p class="chu-nho">Danh mục</p>
+                <h2 id="tieu-de-danh-sach-san-pham">Sản phẩm nổi bật</h2>
+            </div>
+            <span id="so-ket-qua" class="so-ket-qua">@Model.TotalProducts sản phẩm</span>
+        </div>
+
+        <div class="bo-cuc-mua-hang">
+            <!-- Bộ lọc: GET form gửi đúng các tham số brand / category / audience / price / sort về Product/Index -->
+            <aside id="bang-bo-loc" class="cot-bo-loc" aria-labelledby="tieu-de-bo-loc">
+                <form class="hop-bo-loc" method="get" action="@Url.Action("Index", "Product")">
+                    <div class="dau-bo-loc">
+                        <h3 id="tieu-de-bo-loc">Bộ lọc</h3>
+                        <a id="nut-xoa-bo-loc" class="btn btn-link p-0" href="@Url.Action("Index", "Home")">Xóa lọc</a>
+                        <button id="nut-dong-bo-loc" class="btn nut-dong-bo-loc" type="button" aria-label="Đóng bộ lọc">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
+                    </div>
+
+                    <div class="nhom-bo-loc">
+                        <h4>Thương hiệu</h4>
+                        @foreach (var brand in Model.Brands)
+                        {
+                            <label><input class="loc-thuong-hieu" type="radio" name="brand" value="@brand.BrandName" @(qBrand == brand.BrandName ? "checked" : "")> @brand.BrandName</label>
+                        }
+                    </div>
+
+                    <div class="nhom-bo-loc">
+                        <h4>Loại sản phẩm</h4>
+                        @foreach (var cat in Model.Categories)
+                        {
+                            <label><input class="loc-danh-muc" type="radio" name="category" value="@cat.CategoryName" @(qCategory == cat.CategoryName ? "checked" : "")> @cat.CategoryName</label>
+                        }
+                    </div>
+
+                    <div class="nhom-bo-loc">
+                        <h4>Đối tượng</h4>
+                        <label><input class="loc-doi-tuong" type="radio" name="audience" value="Nam" @(qAudience == "Nam" ? "checked" : "")> Nam</label>
+                        <label><input class="loc-doi-tuong" type="radio" name="audience" value="Nữ" @(qAudience == "Nữ" ? "checked" : "")> Nữ</label>
+                        <label><input class="loc-doi-tuong" type="radio" name="audience" value="Unisex" @(qAudience == "Unisex" ? "checked" : "")> Unisex</label>
+                    </div>
+
+                    <div class="nhom-bo-loc">
+                        <h4>Khoảng giá</h4>
+                        <select id="loc-khoang-gia" name="price" class="form-select">
+                            <option value="">Tất cả</option>
+                            <option value="duoi-1tr" @(qPrice == "duoi-1tr" ? "selected" : "")>Dưới 1.000.000đ</option>
+                            <option value="1tr-2tr" @(qPrice == "1tr-2tr" ? "selected" : "")>1.000.000đ - 2.000.000đ</option>
+                            <option value="2tr-3tr" @(qPrice == "2tr-3tr" ? "selected" : "")>2.000.000đ - 3.000.000đ</option>
+                            <option value="tren-3tr" @(qPrice == "tren-3tr" ? "selected" : "")>Trên 3.000.000đ</option>
+                        </select>
+                    </div>
+
+                    <div class="nhom-bo-loc pt-2 mt-1 border-top">
+                        <h4>Sắp xếp sản phẩm</h4>
+                        <select id="sap-xep-san-pham" name="sort" class="form-select" aria-label="Sắp xếp sản phẩm">
+                            <option value="">Sản phẩm nổi bật</option>
+                            <option value="moi-nhat" @(qSort == "moi-nhat" ? "selected" : "")>Mới nhất</option>
+                            <option value="gia-tang" @(qSort == "gia-tang" ? "selected" : "")>Giá thấp đến cao</option>
+                            <option value="gia-giam" @(qSort == "gia-giam" ? "selected" : "")>Giá cao đến thấp</option>
+                            <option value="danh-gia" @(qSort == "danh-gia" ? "selected" : "")>Đánh giá cao</option>
+                            <option value="ban-chay" @(qSort == "ban-chay" ? "selected" : "")>Bán chạy nhất</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-dark w-100 mt-3">Áp dụng bộ lọc</button>
+                </form>
+            </aside>
+
+            <!-- Danh sách sản phẩm -->
+            <div class="cot-danh-sach">
+                <div class="thanh-cong-cu d-lg-none border-0 bg-transparent p-0 mb-3">
+                    <button id="nut-mo-bo-loc" class="btn btn-outline-dark nut-mo-bo-loc w-100" type="button"
+                            aria-controls="bang-bo-loc" aria-expanded="false">
+                        <i class="bi bi-sliders"></i>
+                        <span>Bộ lọc & Sắp xếp</span>
+                    </button>
+                </div>
+
+                <div id="luoi-san-pham" class="row row-cols-1 row-cols-sm-2 row-cols-xl-3 g-3 g-lg-4">
+                    @foreach (var item in Model.AllProducts.Take(12))
+                    {
+                        @Html.Partial("_ProductCard", item)
+                    }
+                </div>
+
+                <div class="khung-xem-them">
+                    <a href="@Url.Action("Index", "Product")" class="btn btn-dark">Xem tất cả @Model.TotalProducts sản phẩm</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<div id="nen-bo-loc" class="nen-bo-loc" hidden></div>
+
+<!-- FLASH DEAL -->
+@if (Model.FlashDealProducts != null && Model.FlashDealProducts.Any())
+{
+    var deal = Model.FlashDealProducts.First();
+    var dealUrl = Url.Action("Detail", "Product", new { id = deal.Id });
+
+    <section id="khu-flash-deal" class="khu-flash-deal py-5" aria-label="Ưu đãi bất ngờ">
+        <div class="container">
+            <div class="mb-4">
+                <span class="nhan-uu-dai-bat-ngo">
+                    <i class="bi bi-stars"></i> ƯU ĐÃI BẤT NGỜ
+                </span>
+            </div>
+
+            <div class="row g-4 align-items-stretch">
+                <div class="col-xl-5 col-lg-6">
+                    <div class="hop-flash-deal h-100 d-flex flex-column justify-content-between p-4 p-lg-5">
+                        <div>
+                            <div class="d-inline-flex align-items-center gap-2 nhan-flash-chay mb-4">
+                                <i class="bi bi-fire text-white"></i>
+                                <span>FLASH DEAL ĐANG CHẠY</span>
+                            </div>
+                            <h2 class="tieu-de-flash-deal mb-3">Ưu đãi giới hạn cho combo Hypebeast + Phụ kiện</h2>
+                            <p class="mo-ta-flash-deal mb-4">
+                                Khi mua giày trong khung giờ vàng, bạn sẽ được tặng kèm xịt nano chống nước, tất Nike chính hãng và voucher giảm 20% cho lần mua sau. Chốt nhanh trước khi đồng hồ về 0.
+                            </p>
+                        </div>
+
+                        <div>
+                            <div class="bang-dem-nguoc d-flex gap-3 text-center mb-4">
+                                <div class="o-dem-nguoc flex-fill"><h3 id="flash-ngay">01</h3><small>NGÀY</small></div>
+                                <div class="o-dem-nguoc flex-fill"><h3 id="flash-gio">13</h3><small>GIỜ</small></div>
+                                <div class="o-dem-nguoc flex-fill"><h3 id="flash-phut">35</h3><small>PHÚT</small></div>
+                                <div class="o-dem-nguoc flex-fill"><h3 id="flash-giay">32</h3><small>GIÂY</small></div>
+                            </div>
+
+                            <ul class="danh-sach-cam-ket-flash list-unstyled mb-0">
+                                <li class="mb-2 d-flex align-items-center gap-2">
+                                    <i class="bi bi-check-circle text-info"></i> Đổi size miễn phí tận nhà trong 7 ngày
+                                </li>
+                                <li class="mb-2 d-flex align-items-center gap-2">
+                                    <i class="bi bi-check-circle text-info"></i> Freeship toàn quốc cho đơn từ 1.000.000đ
+                                </li>
+                                <li class="d-flex align-items-center gap-2">
+                                    <i class="bi bi-check-circle text-info"></i> Kiểm tra, mang thử hàng trước khi thanh toán
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-7 col-lg-6">
+                    <div class="hop-san-pham-flash h-100 p-4 p-lg-5">
+                        <div class="row g-4 align-items-center h-100">
+                            <div class="col-md-5 d-flex align-items-center">
+                                <div class="khung-anh-flash position-relative w-100 d-flex justify-content-center p-3">
+                                    @if (deal.HasDiscount)
+                                    {
+                                        <span class="nhan-giam-gia fs-6 start-0 me-5">-@deal.DiscountPercent%</span>
+                                    }
+                                    <img src="@Url.Content(!string.IsNullOrEmpty(deal.ImageUrl) ? deal.ImageUrl : "~/assets/img/image (4).png")"
+                                         alt="@deal.Name" class="img-fluid anh-giay-flash">
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="chi-tiet-flash">
+                                    <p class="chu-nho text-secondary mb-2">LIMITED EDITION</p>
+                                    <h3 class="ten-san-pham-flash mb-3">@deal.Name</h3>
+                                    <p class="mo-ta-san-pham-flash text-secondary mb-4">
+                                        Sản phẩm chính hãng 100%, đầy đủ phụ kiện, tem mác và chính sách bảo hành, đổi size minh bạch từ SoleStyle.
+                                    </p>
+
+                                    <ul class="danh-sach-tinh-nang list-unstyled mb-0">
+                                        <li class="mb-3 d-flex align-items-center gap-3">
+                                            <i class="bi bi-patch-check text-dark fs-5"></i> <strong>Cam kết chính hãng 100%</strong>
+                                        </li>
+                                        <li class="mb-3 d-flex align-items-center gap-3">
+                                            <i class="bi bi-arrow-repeat text-dark fs-5"></i> <strong>Đổi size miễn phí trong 7 ngày</strong>
+                                        </li>
+                                        <li class="d-flex align-items-center gap-3">
+                                            <i class="bi bi-shield-check text-dark fs-5"></i> <strong>Kiểm tra hàng trước khi thanh toán</strong>
+                                        </li>
+                                    </ul>
+
+                                    <div class="gia-flash-deal d-flex align-items-baseline gap-3 mt-4 mb-4">
+                                        <strong class="fs-1 fw-bold text-dark">@deal.Price.ToString("N0")đ</strong>
+                                        @if (deal.OldPrice > deal.Price && deal.OldPrice > 0)
+                                        {
+                                            <del class="fs-5 text-secondary">@deal.OldPrice.ToString("N0")đ</del>
+                                        }
+                                    </div>
+
+                                    <div class="d-flex flex-wrap gap-3 mt-4">
+                                        <a href="@dealUrl"
+                                           class="btn btn-danger btn-lg rounded-pill fw-bold border-2 flex-fill text-decoration-none d-flex align-items-center justify-content-center">
+                                            Xem chi tiết
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+}
+
+<!-- CHÍNH SÁCH + FAQ (theo mẫu) -->
+<section class="khu-chinh-sach py-5" aria-label="Chính sách từ cửa hàng">
+    <div class="container">
+        <div class="mb-4 text-center text-md-start">
+            <span class="nhan-chinh-sach">
+                <i class="bi bi-stars"></i> CHÍNH SÁCH TỪ CỬA HÀNG
+            </span>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="the-chinh-sach p-4 p-lg-5 h-100">
+                    <div class="bieu-tuong-chinh-sach bg-xanh-nhat text-primary mb-4">
+                        <i class="bi bi-truck fs-4"></i>
+                    </div>
+                    <h3 class="tieu-de-the-cs mb-3">Giao nhanh có kiểm tra</h3>
+                    <p class="mo-ta-the-cs text-secondary mb-0">
+                        Ship nội thành thần tốc, nhận giày được kiểm tra ngoại quan,
+                        tem mác và phụ kiện trước khi thanh toán.
+                    </p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="the-chinh-sach p-4 p-lg-5 h-100">
+                    <div class="bieu-tuong-chinh-sach bg-cam-nhat text-warning mb-4">
+                        <i class="bi bi-arrow-repeat fs-4"></i>
+                    </div>
+                    <h3 class="tieu-de-the-cs mb-3">Hỗ trợ đổi size linh hoạt</h3>
+                    <p class="mo-ta-the-cs text-secondary mb-0">
+                        Hỗ trợ đổi size nhanh chóng tận nhà trong vòng 7 ngày nếu
+                        không vừa chân, định giá bù chênh lệch rõ ràng.
+                    </p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-12">
+                <div class="the-chinh-sach p-4 p-lg-5 h-100">
+                    <div class="bieu-tuong-chinh-sach bg-xam-nhat text-dark mb-4">
+                        <i class="bi bi-patch-check fs-4"></i>
+                    </div>
+                    <h3 class="tieu-de-the-cs mb-3">Bảo hành chủ động</h3>
+                    <p class="mo-ta-the-cs text-secondary mb-0">
+                        Quy trình hậu mãi gọn gàng, lịch sử mua hàng được lưu bằng số
+                        điện thoại để hỗ trợ nhanh khi bạn cần kiểm tra.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="khu-faq py-5 bg-nen-nhat" aria-label="Câu hỏi thường gặp">
+    <div class="container">
+        <div class="khung-trang-faq p-4 p-lg-5 mx-auto" style="max-width: 900px;">
+            <h2 class="tieu-de-faq text-center mb-4">CÂU HỎI THƯỜNG GẶP</h2>
+
+            <div class="accordion accordion-flush danh-sach-faq" id="accordionFAQ">
+                <div class="accordion-item mb-3">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#faq-1">
+                            Làm sao để chọn đúng size giày?
+                        </button>
+                    </h2>
+                    <div id="faq-1" class="accordion-collapse collapse" data-bs-parent="#accordionFAQ">
+                        <div class="accordion-body text-secondary">
+                            Bạn có thể đo chiều dài bàn chân (từ gót đến ngón dài nhất) và đối chiếu với bảng size chart chuẩn của
+                            từng thương hiệu (Nike, Adidas, Converse...) có sẵn trên website. Nếu vẫn phân vân, hãy gọi hotline để
+                            nhân viên tư vấn size chuẩn nhất cho form chân của bạn.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item mb-3">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#faq-2">
+                            Sản phẩm của shop có phải hàng chính hãng không?
+                        </button>
+                    </h2>
+                    <div id="faq-2" class="accordion-collapse collapse" data-bs-parent="#accordionFAQ">
+                        <div class="accordion-body text-secondary">
+                            SoleStyle cam kết 100% sản phẩm bán ra đều là hàng chính hãng. Bạn hoàn toàn có thể kiểm tra (check
+                            legit) qua tem mác, hộp, và chất liệu. Chúng tôi đền bù gấp đôi nếu phát hiện hàng giả, hàng nhái.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item mb-3">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq-3">
+                            Chính sách đổi trả của shop như thế nào?
+                        </button>
+                    </h2>
+                    <div id="faq-3" class="accordion-collapse collapse show" data-bs-parent="#accordionFAQ">
+                        <div class="accordion-body text-secondary">
+                            SoleStyle hỗ trợ đổi hàng trong vòng 7 ngày kể từ khi nhận hàng. Điều kiện đổi: sản phẩm còn nguyên
+                            tem mác, chưa qua sử dụng, chưa giặt tẩy và còn hóa đơn mua hàng. Áp dụng đổi size hoặc đổi sang mẫu
+                            khác có giá trị tương đương hoặc cao hơn. Tuy nhiên, cửa hàng không bảo hành cho hư hỏng do tác động
+                            vật lý mạnh gây ra, nên hãy cẩn thận khi sử dụng.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section scripts {
+    <script src="@Url.Content("~/Content/assets/js/data/products.js")"></script>
+    <script src="@Url.Content("~/Content/assets/js/core/common.js")"></script>
+    <script src="@Url.Content("~/Content/assets/js/pages/home.js")"></script>
+}

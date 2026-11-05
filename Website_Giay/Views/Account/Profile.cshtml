@@ -1,0 +1,129 @@
+@model Website_Giay.ViewModels.ProfileViewModel
+@{
+    ViewBag.Title = "Hồ sơ của tôi";
+    ViewBag.PageName = "profile";
+    ViewBag.IsSubPage = true;
+}
+
+@section styles {
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/pages/profile.css")">
+}
+
+<div class="container py-5">
+    <div class="row g-4">
+        <!-- Sidebar tài khoản -->
+        <div class="col-lg-4">
+            <div class="card p-4 rounded-4 shadow-sm border-0 mb-4 text-center">
+                <div class="mb-3">
+                    <div class="avatar-circle bg-dark text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px; font-size: 2rem;">
+                        @(Model.User.FullName != null && Model.User.FullName.Length > 0 ? Model.User.FullName.Substring(0, 1).ToUpper() : "U")
+                    </div>
+                </div>
+                <h4 class="fw-bold mb-1">@Model.User.FullName</h4>
+                <p class="text-secondary small mb-3">@Model.User.Email</p>
+                <div class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill mb-3">
+                    @(Model.User.Role == "Admin" ? "Quản Trị Viên" : "Khách Hàng Thân Thiết")
+                </div>
+
+                <hr class="text-secondary opacity-25">
+
+                <div class="text-start">
+                    <div class="mb-2">
+                        <small class="text-secondary d-block">Số điện thoại:</small>
+                        <strong>@(string.IsNullOrEmpty(Model.User.PhoneNumber) ? "Chưa cập nhật" : Model.User.PhoneNumber)</strong>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-secondary d-block">Địa chỉ:</small>
+                        <strong>@(string.IsNullOrEmpty(Model.User.Address) ? "Chưa cập nhật" : Model.User.Address)</strong>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 mt-2">
+                    @if (Model.User.Role == "Admin")
+                    {
+                        <a href="@Url.Action("Index", "Admin")" class="btn btn-primary"><i class="bi bi-speedometer2 me-2"></i>Trang quản trị</a>
+                    }
+                    <a href="@Url.Action("Logout", "Account")" class="btn btn-outline-danger"><i class="bi bi-box-arrow-right me-2"></i>Đăng xuất</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lịch sử đơn hàng -->
+        <div class="col-lg-8">
+            <div class="card p-4 rounded-4 shadow-sm border-0">
+                <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+                    <h2 class="fs-4 fw-bold mb-0"><i class="bi bi-bag-check me-2"></i>Lịch sử đơn hàng</h2>
+                    <span class="badge bg-dark rounded-pill">@(Model.OrderHistory != null ? Model.OrderHistory.Count : 0) đơn</span>
+                </div>
+
+                @if (Model.OrderHistory != null && Model.OrderHistory.Any())
+                {
+                    <div class="d-flex flex-column gap-3">
+                        @foreach (var order in Model.OrderHistory)
+                        {
+                            <div class="p-3 border rounded-3 bg-light">
+                                <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                                    <div>
+                                        <strong class="text-dark">Đơn hàng #@order.OrderId</strong>
+                                        <span class="text-secondary small ms-2">@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</span>
+                                    </div>
+                                    <div>
+                                        @if (order.OrderStatus == "Đã giao")
+                                        {
+                                            <span class="badge bg-success">@order.OrderStatus</span>
+                                        }
+                                        else if (order.OrderStatus == "Đang giao")
+                                        {
+                                            <span class="badge bg-primary">@order.OrderStatus</span>
+                                        }
+                                        else if (order.OrderStatus == "Đã hủy")
+                                        {
+                                            <span class="badge bg-danger">@order.OrderStatus</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning text-dark">@order.OrderStatus</span>
+                                        }
+                                    </div>
+                                </div>
+
+                                <div class="d-flex flex-column gap-2 mb-3">
+                                    @foreach (var d in order.Details)
+                                    {
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <img src="@Url.Content(d.ImageUrl ?? "~/assets/img/default.png")" alt="@d.ProductName" class="rounded" style="width: 45px; height: 45px; object-fit: cover;">
+                                                <div>
+                                                    <span class="fw-medium small d-block">@d.ProductName</span>
+                                                    <small class="text-secondary">@d.SelectedColor - Size @d.SelectedSize x @d.Quantity</small>
+                                                </div>
+                                            </div>
+                                            <strong class="small text-danger">@d.Total.ToString("N0")đ</strong>
+                                        </div>
+                                    }
+                                </div>
+
+                                <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                    <span class="small text-secondary">PTTT: @order.PaymentMethod</span>
+                                    <div>
+                                        <span class="text-secondary small me-2">Tổng tiền:</span>
+                                        <strong class="fs-5 text-danger">@order.TotalAmount.ToString("N0")đ</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="bi bi-bag-x fs-1 text-secondary d-block mb-3"></i>
+                        <h5 class="fw-bold">Bạn chưa có đơn hàng nào</h5>
+                        <p class="text-secondary mb-4">Các đơn hàng bạn đặt sẽ xuất hiện tại đây.</p>
+                        <a href="@Url.Action("Index", "Product")" class="btn btn-dark">Mua sắm ngay</a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,160 @@
+@model Website_Giay.ViewModels.CheckoutViewModel
+@{
+    ViewBag.Title = "Thanh toán";
+    ViewBag.PageName = "checkout";
+    ViewBag.IsSubPage = true;
+}
+
+@section styles {
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/pages/checkout.css")">
+}
+
+<!-- BREADCRUMB -->
+<nav class="checkout-breadcrumb py-3" aria-label="Đường dẫn">
+    <div class="container">
+        <ol class="breadcrumb bg-transparent p-0 mb-0">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")" class="text-decoration-none text-secondary">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Cart")" class="text-decoration-none text-secondary">Giỏ hàng</a></li>
+            <li class="breadcrumb-item active text-dark fw-bold" aria-current="page">Thanh toán</li>
+        </ol>
+    </div>
+</nav>
+
+<!-- MAIN CHECKOUT CONTENT -->
+<main class="checkout-page py-4">
+    <div class="container">
+        @using (Html.BeginForm("Checkout", "Cart", FormMethod.Post, new { id = "formThanhToan", @class = "needs-validation" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+
+            <div class="row gx-4 gy-4">
+                <!-- Thông tin giao hàng bên trái -->
+                <section class="col-lg-7">
+                    <div class="p-4 rounded-4 bg-white shadow-sm mb-4">
+                        <h2 class="fs-4 fw-bold mb-4 pb-2 border-bottom">
+                            <i class="bi bi-geo-alt me-2 text-danger"></i>Thông tin nhận hàng
+                        </h2>
+
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Họ và tên người nhận <span class="text-danger">*</span></label>
+                                @Html.TextBoxFor(m => m.FullName, new { @class = "form-control py-2", placeholder = "Nguyễn Văn A", required = "required" })
+                                @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "text-danger small" })
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Số điện thoại <span class="text-danger">*</span></label>
+                                @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control py-2", placeholder = "0901234567", required = "required" })
+                                @Html.ValidationMessageFor(m => m.PhoneNumber, "", new { @class = "text-danger small" })
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Email</label>
+                                @Html.TextBoxFor(m => m.Email, new { @class = "form-control py-2", type = "email", placeholder = "example@gmail.com" })
+                                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger small" })
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Địa chỉ giao hàng chi tiết <span class="text-danger">*</span></label>
+                                @Html.TextBoxFor(m => m.Address, new { @class = "form-control py-2", placeholder = "Số nhà, tên đường, phường/xã, quận/huyện, tỉnh/TP", required = "required" })
+                                @Html.ValidationMessageFor(m => m.Address, "", new { @class = "text-danger small" })
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Ghi chú đơn hàng (nếu có)</label>
+                                @Html.TextAreaFor(m => m.Note, new { @class = "form-control", rows = "3", placeholder = "Ví dụ: Giao hàng vào giờ hành chính, gọi trước khi giao..." })
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Phương thức thanh toán -->
+                    <div class="p-4 rounded-4 bg-white shadow-sm">
+                        <h2 class="fs-4 fw-bold mb-4 pb-2 border-bottom">
+                            <i class="bi bi-credit-card me-2 text-primary"></i>Phương thức thanh toán
+                        </h2>
+
+                        <div class="d-flex flex-column gap-3">
+                            <label class="p-3 border rounded-3 d-flex align-items-center gap-3 cursor-pointer">
+                                @Html.RadioButtonFor(m => m.PaymentMethod, "COD", new { @checked = "checked" })
+                                <div class="flex-grow-1">
+                                    <strong class="d-block"><i class="bi bi-cash-stack me-2 text-success"></i>Thanh toán khi nhận hàng (COD)</strong>
+                                    <small class="text-secondary">Bạn chỉ thanh toán sau khi đã kiểm tra sản phẩm đạt yêu cầu.</small>
+                                </div>
+                            </label>
+
+                            <label class="p-3 border rounded-3 d-flex align-items-center gap-3 cursor-pointer">
+                                @Html.RadioButtonFor(m => m.PaymentMethod, "BankTransfer")
+                                <div class="flex-grow-1">
+                                    <strong class="d-block"><i class="bi bi-bank me-2 text-info"></i>Chuyển khoản ngân hàng</strong>
+                                    <small class="text-secondary">Quét mã VietQR tiện lợi và xác nhận tự động.</small>
+                                </div>
+                            </label>
+
+                            <label class="p-3 border rounded-3 d-flex align-items-center gap-3 cursor-pointer">
+                                @Html.RadioButtonFor(m => m.PaymentMethod, "Momo")
+                                <div class="flex-grow-1">
+                                    <strong class="d-block"><i class="bi bi-wallet2 me-2 text-danger"></i>Ví điện tử MoMo</strong>
+                                    <small class="text-secondary">Thanh toán nhanh chóng qua ứng dụng MoMo.</small>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Đơn hàng tóm tắt bên phải -->
+                <aside class="col-lg-5">
+                    <div class="p-4 rounded-4 bg-white shadow-sm sticky-top" style="top: 90px;">
+                        <h2 class="fs-4 fw-bold mb-3 pb-2 border-bottom">Đơn hàng của bạn</h2>
+
+                        @if (Model.Cart != null && Model.Cart.Items.Any())
+                        {
+                            <div class="checkout-items-list mb-3 overflow-auto" style="max-height: 320px;">
+                                @foreach (var item in Model.Cart.Items)
+                                {
+                                    <div class="d-flex gap-3 py-2 border-bottom align-items-center">
+                                        <img src="@Url.Content(item.ImageUrl ?? "~/assets/img/default.png")" alt="@item.ProductName" class="rounded-3" style="width: 60px; height: 60px; object-fit: cover;">
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-0 text-truncate" style="max-width: 200px;">@item.ProductName</h6>
+                                            <small class="text-secondary">Màu: @item.SelectedColor | Size: @item.SelectedSize</small>
+                                            <div class="d-flex justify-content-between align-items-center mt-1">
+                                                <span class="text-secondary small">x @item.Quantity</span>
+                                                <strong class="text-danger">@item.Total.ToString("N0")đ</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-secondary">Tạm tính:</span>
+                                <strong class="text-dark">@Model.Cart.SubTotal.ToString("N0")đ</strong>
+                            </div>
+
+                            <div class="d-flex justify-content-between mb-3">
+                                <span class="text-secondary">Phí giao hàng:</span>
+                                <strong class="@(Model.Cart.ShippingFee == 0 ? "text-success" : "text-dark")">
+                                    @(Model.Cart.ShippingFee == 0 ? "Miễn phí" : Model.Cart.ShippingFee.ToString("N0") + "đ")
+                                </strong>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center pt-3 border-top mb-4">
+                                <span class="fs-5 fw-bold">Tổng thanh toán:</span>
+                                <strong class="fs-3 text-danger fw-bolder">@Model.Cart.TotalAmount.ToString("N0")đ</strong>
+                            </div>
+
+                            <button type="submit" class="btn btn-danger btn-lg w-100 py-3 fw-bold rounded-pill shadow-sm">
+                                <i class="bi bi-shield-lock me-2"></i> Xác nhận đặt hàng
+                            </button>
+                        }
+                        else
+                        {
+                            <p class="text-secondary">Không có sản phẩm nào trong giỏ hàng.</p>
+                            <a href="@Url.Action("Index", "Product")" class="btn btn-dark w-100">Mua sắm ngay</a>
+                        }
+                    </div>
+                </aside>
+            </div>
+        }
+    </div>
+</main>

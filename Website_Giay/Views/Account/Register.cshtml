@@ -1,0 +1,171 @@
+@model Website_Giay.ViewModels.RegisterViewModel
+@{
+    Layout = null;
+
+    Func<string, string> loi = key =>
+        ViewData.ModelState.ContainsKey(key)
+            ? ViewData.ModelState[key].Errors.Select(e => e.ErrorMessage).FirstOrDefault()
+            : null;
+
+    string loiChung = loi("");
+    string loiHoTen = loi("FullName");
+    string loiEmail = loi("Email");
+    string loiDienThoai = loi("PhoneNumber");
+    string loiMatKhau = loi("Password");
+    string loiNhapLai = loi("ConfirmPassword");
+}
+<!doctype html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký tài khoản | SoleStyle</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/base.css")">
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/components/header.css")">
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/components/footer.css")">
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/components/breadcrumb.css")">
+    <link rel="stylesheet" href="@Url.Content("~/Content/assets/css/pages/login.css")">
+</head>
+
+<body data-page="register">
+
+    <div class="auth-card" style="max-width: 520px;">
+
+        <div class="auth-header">
+            <a href="@Url.Action("Index", "Home")" class="back-home">
+                <i class="bi bi-arrow-left"></i> Trang chủ
+            </a>
+            <a href="@Url.Action("Index", "Home")" class="brand-icon">
+                <i class="bi bi-shoe-print"></i> SoleStyle
+            </a>
+        </div>
+
+        <div class="auth-title">
+            <h1>Tạo tài khoản</h1>
+            <p>Trở thành thành viên SoleStyle để nhận ngay ưu đãi độc quyền.</p>
+        </div>
+
+        <div id="thong-bao-dang-ky" class="thong-bao-bieu-mau" @(loiChung != null ? "style=display:flex;" : "")>
+            <i class="bi bi-info-circle"></i>
+            <span id="thong-bao-noi-dung">@loiChung</span>
+        </div>
+
+        @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { id = "bieu-mau-dang-ky", novalidate = "novalidate" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="form-group">
+                <label for="ho-ten-dang-ky" class="form-label">Họ và tên</label>
+                <div class="input-wrapper">
+                    <i class="bi bi-person"></i>
+                    @Html.TextBoxFor(m => m.FullName, new { @class = "form-control" + (loiHoTen != null ? " is-invalid" : ""), id = "ho-ten-dang-ky", placeholder = "Nguyễn Văn A", minlength = "2", required = "required" })
+                </div>
+                <div class="invalid-feedback @(loiHoTen != null ? "d-block" : "")" id="ho-ten-feedback">@(loiHoTen ?? "Vui lòng nhập họ tên (tối thiểu 2 ký tự).")</div>
+            </div>
+
+            <div class="form-group">
+                <label for="email-dang-ky" class="form-label">Email</label>
+                <div class="input-wrapper">
+                    <i class="bi bi-envelope"></i>
+                    @Html.TextBoxFor(m => m.Email, new { @class = "form-control" + (loiEmail != null ? " is-invalid" : ""), id = "email-dang-ky", type = "email", placeholder = "you@example.com", required = "required" })
+                </div>
+                <div class="invalid-feedback @(loiEmail != null ? "d-block" : "")" id="email-feedback">@(loiEmail ?? "Vui lòng nhập email hợp lệ.")</div>
+            </div>
+
+            <div class="form-group">
+                <label for="dien-thoai-dang-ky" class="form-label">Số điện thoại</label>
+                <div class="input-wrapper">
+                    <i class="bi bi-telephone"></i>
+                    @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control" + (loiDienThoai != null ? " is-invalid" : ""), id = "dien-thoai-dang-ky", type = "tel", placeholder = "0901234567", pattern = "[0-9]{9,11}", required = "required" })
+                </div>
+                <div class="invalid-feedback @(loiDienThoai != null ? "d-block" : "")" id="dien-thoai-feedback">@(loiDienThoai ?? "Số điện thoại gồm 9 - 11 chữ số.")</div>
+            </div>
+
+            <div class="row g-2">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="mat-khau-dang-ky" class="form-label">Mật khẩu</label>
+                        <div class="input-wrapper">
+                            <i class="bi bi-lock"></i>
+                            @Html.PasswordFor(m => m.Password, new { @class = "form-control" + (loiMatKhau != null ? " is-invalid" : ""), id = "mat-khau-dang-ky", placeholder = "••••••••", minlength = "6", required = "required" })
+                        </div>
+                        <div class="invalid-feedback @(loiMatKhau != null ? "d-block" : "")" id="password-feedback">@(loiMatKhau ?? "Mật khẩu tối thiểu 6 ký tự.")</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="nhap-lai-mat-khau" class="form-label">Xác nhận mật khẩu</label>
+                        <div class="input-wrapper">
+                            <i class="bi bi-shield-check"></i>
+                            @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control" + (loiNhapLai != null ? " is-invalid" : ""), id = "nhap-lai-mat-khau", placeholder = "••••••••", minlength = "6", required = "required" })
+                        </div>
+                        <div class="invalid-feedback @(loiNhapLai != null ? "d-block" : "")" id="confirm-feedback">@(loiNhapLai ?? "Mật khẩu nhập lại chưa khớp.")</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="dia-chi-dang-ky" class="form-label">Địa chỉ</label>
+                <div class="input-wrapper">
+                    <i class="bi bi-geo-alt"></i>
+                    @Html.TextBoxFor(m => m.Address, new { @class = "form-control", id = "dia-chi-dang-ky", placeholder = "123 Đường ABC, Quận XYZ, TP.HCM" })
+                </div>
+            </div>
+
+            <button class="btn-login" type="submit" id="btnDangKy">
+                <span class="btn-text">Đăng ký tài khoản</span>
+                <span class="spinner"></span>
+            </button>
+        }
+
+        <div class="auth-footer">
+            <p>Đã có tài khoản? <a href="@Url.Action("Login", "Account")">Đăng nhập</a></p>
+        </div>
+    </div>
+
+    <script>
+    (function () {
+      var form = document.getElementById("bieu-mau-dang-ky");
+      if (!form) return;
+
+      var fields = {
+        hoTen: [document.getElementById("ho-ten-dang-ky"), document.getElementById("ho-ten-feedback")],
+        email: [document.getElementById("email-dang-ky"), document.getElementById("email-feedback")],
+        dienThoai: [document.getElementById("dien-thoai-dang-ky"), document.getElementById("dien-thoai-feedback")],
+        matKhau: [document.getElementById("mat-khau-dang-ky"), document.getElementById("password-feedback")],
+        nhapLai: [document.getElementById("nhap-lai-mat-khau"), document.getElementById("confirm-feedback")]
+      };
+      var btn = document.getElementById("btnDangKy");
+
+      function setState(pair, ok) {
+        pair[0].classList.toggle("is-invalid", !ok);
+        pair[1].classList.toggle("d-block", !ok);
+      }
+
+      form.addEventListener("submit", function (e) {
+        var ok = {
+          hoTen: fields.hoTen[0].value.trim().length >= 2,
+          email: fields.email[0].value.trim() !== "" && fields.email[0].checkValidity(),
+          dienThoai: /^[0-9]{9,11}$/.test(fields.dienThoai[0].value.trim()),
+          matKhau: fields.matKhau[0].value.length >= 6,
+          nhapLai: fields.nhapLai[0].value === fields.matKhau[0].value && fields.nhapLai[0].value !== ""
+        };
+        var all = true;
+        Object.keys(ok).forEach(function (k) {
+          setState(fields[k], ok[k]);
+          if (!ok[k]) all = false;
+        });
+        if (!all) {
+          e.preventDefault();
+          return;
+        }
+        btn.classList.add("loading");
+      });
+    })();
+    </script>
+</body>
+</html>

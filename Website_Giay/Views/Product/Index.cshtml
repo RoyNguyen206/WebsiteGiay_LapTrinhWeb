@@ -7,12 +7,10 @@
     ViewBag.PageName = "products";
     ViewBag.IsSubPage = true;
 
-    // Phân trang kiểu "Xem thêm" (controller truyền qua ViewBag)
     int currentPage = ViewBag.CurrentPage != null ? (int)ViewBag.CurrentPage : 1;
     int pageSize = ViewBag.PageSize != null ? (int)ViewBag.PageSize : 12;
     bool hasMore = currentPage * pageSize < Model.TotalItems;
 
-    // Tạo link lọc: đổi 1 tiêu chí, giữ nguyên các tiêu chí còn lại (null thì tự bị bỏ khỏi URL)
     Func<string, string, string, string, string> u = (c, b, p, s) =>
         Url.Action("Index", "Product", new
         {
@@ -24,93 +22,79 @@
             search = Model.SearchKeyword
         });
 
-    bool tatCaGia = string.IsNullOrEmpty(Model.PriceRange) || Model.PriceRange == "tat-ca";
     bool noiBat = string.IsNullOrEmpty(Model.SortBy) || Model.SortBy == "noi-bat";
 }
 
 @section styles {
     <link rel="stylesheet" href="@Url.Content("~/assets/css/pages/products.css")">
+    <style>
+        .filter-radio-pill {
+            border: 1px solid #e2e8f0;
+            background: #ffffff;
+        }
+        .filter-radio-pill:hover, .active-filter-pill {
+            border-color: #f97316 !important;
+            background-color: #fff7ed !important;
+        }
+    </style>
 }
 
-<section id="khu-san-pham" class="khu-san-pham section-trang">
+<!-- BREADCRUMB -->
+<nav class="container mt-3 mb-2" aria-label="breadcrumb">
+    <ol class="breadcrumb py-2 px-0 bg-transparent mb-0">
+        <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")" class="text-decoration-none text-secondary">Trang chủ</a></li>
+        <li class="breadcrumb-item"><a href="@Url.Action("Index", "Product")" class="text-decoration-none text-secondary">Sản phẩm</a></li>
+        @if (!string.IsNullOrEmpty(Model.SelectedCategory))
+        {
+            <li class="breadcrumb-item active text-dark fw-bold" aria-current="page">@Model.SelectedCategory</li>
+        }
+        else if (!string.IsNullOrEmpty(Model.SelectedBrand))
+        {
+            <li class="breadcrumb-item active text-dark fw-bold" aria-current="page">@Model.SelectedBrand</li>
+        }
+        else
+        {
+            <li class="breadcrumb-item active text-dark fw-bold" aria-current="page">Tất cả</li>
+        }
+    </ol>
+</nav>
+
+<section id="khu-san-pham" class="khu-san-pham pb-5">
     <div class="container">
-        <div class="tieu-de-trang mb-4">
+        <!-- HEADER TIÊU ĐỀ TRANG -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
             <div>
-                <p class="chu-nho">Danh mục</p>
-                <h1 id="tieu-de-danh-sach-san-pham">
+                <p class="chu-nho text-secondary mb-1">Cửa hàng</p>
+                <h1 id="tieu-de-danh-sach-san-pham" class="fs-2 fw-bold text-dark mb-0">
                     @(!string.IsNullOrEmpty(Model.SelectedCategory) ? Model.SelectedCategory
                     : !string.IsNullOrEmpty(Model.SelectedBrand) ? Model.SelectedBrand
                     : !string.IsNullOrEmpty(Model.SearchKeyword) ? "Kết quả tìm kiếm: \"" + Model.SearchKeyword + "\""
                     : "Tất cả sản phẩm")
                 </h1>
             </div>
-            <span id="so-ket-qua" class="so-ket-qua">@Model.TotalItems sản phẩm</span>
+            
+            <div class="d-flex align-items-center gap-3">
+                <span id="so-ket-qua" class="so-ket-qua text-secondary">@Model.TotalItems sản phẩm</span>
+                <!-- Sort Select -->
+                <select id="sap-xep-san-pham" class="form-select form-select-sm"
+                        style="width: auto; min-height: 38px; border-radius: 8px;" onchange="location = this.value;">
+                    <option value="@u(Model.SelectedCategory, Model.SelectedBrand, Model.PriceRange, null)" @(noiBat ? "selected" : "")>Sản phẩm nổi bật</option>
+                    <option value="@u(Model.SelectedCategory, Model.SelectedBrand, Model.PriceRange, "gia-tang")" @(Model.SortBy == "gia-tang" ? "selected" : "")>Giá thấp đến cao</option>
+                    <option value="@u(Model.SelectedCategory, Model.SelectedBrand, Model.PriceRange, "gia-giam")" @(Model.SortBy == "gia-giam" ? "selected" : "")>Giá cao đến thấp</option>
+                    <option value="@u(Model.SelectedCategory, Model.SelectedBrand, Model.PriceRange, "giam-gia")" @(Model.SortBy == "giam-gia" ? "selected" : "")>Đang giảm giá</option>
+                </select>
+            </div>
         </div>
 
-        <div class="bo-cuc-mua-hang d-block">
-            <div class="cot-danh-sach w-100">
+        <!-- BỐ CỤC 2 CỘT: TRÁI LỌC CỐ ĐỊNH, PHẢI HIỂN THỊ SẢN PHẨM -->
+        <div class="row">
+            <!-- CỘT TRÁI: BỘ LỌC CỐ ĐỊNH -->
+            <aside class="col-lg-3 col-md-4 mb-4">
+                @Html.Partial("_SidebarFilter", Model)
+            </aside>
 
-                <!-- BỘ LỌC NGANG -->
-                <div class="bo-loc-ngang mb-4 p-4 rounded-4" style="background-color: #f8fafc; border: 1px solid #e5e7eb;">
-
-                    <!-- PHÂN LOẠI -->
-                    <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
-                        <span class="fw-bold me-3 text-primary">PHÂN LOẠI:</span>
-                        <a href="@u(null, Model.SelectedBrand, Model.PriceRange, Model.SortBy)"
-                           class="btn filter-category-button @(string.IsNullOrEmpty(Model.SelectedCategory) ? "active" : "")">Tất cả</a>
-                        @foreach (var cat in Model.Categories)
-                        {
-                            <a href="@u(cat.CategoryName, Model.SelectedBrand, Model.PriceRange, Model.SortBy)"
-                               class="btn filter-category-button @(cat.IsSelected ? "active" : "")">@cat.CategoryName</a>
-                        }
-                    </div>
-
-                    <!-- THƯƠNG HIỆU -->
-                    <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
-                        <span class="fw-bold me-3 text-danger">THƯƠNG HIỆU:</span>
-                        <a href="@u(Model.SelectedCategory, null, Model.PriceRange, Model.SortBy)"
-                           class="btn btn-pill-outline filter-brand-button @(string.IsNullOrEmpty(Model.SelectedBrand) ? "active" : "")">
-                            <span class="filter-logo"><i class="bi bi-grid-fill"></i></span>
-                            <span class="filter-text">Tất cả</span>
-                        </a>
-                        @foreach (var brand in Model.Brands)
-                        {
-                            var logo = !string.IsNullOrEmpty(brand.LogoUrl) ? brand.LogoUrl : "~/assets/img/logo" + brand.BrandName.Replace(" ", "") + ".png";
-                            <a href="@u(Model.SelectedCategory, brand.BrandName, Model.PriceRange, Model.SortBy)"
-                               class="btn btn-pill-outline filter-brand-button @(brand.IsSelected ? "active" : "")">
-                                <span class="filter-logo">
-                                    <img src="@Url.Content(logo)" alt="@brand.BrandName logo"
-                                         onerror="this.onerror=null; this.src='@Url.Content("~/assets/img/logoNike.png")';">
-                                </span>
-                                <span class="filter-text">@brand.BrandName</span>
-                            </a>
-                        }
-                    </div>
-
-                    <!-- SẮP XẾP & KHOẢNG GIÁ -->
-                    <div class="d-flex flex-wrap align-items-center gap-3 pt-3 border-top">
-                        <span class="fw-bold text-dark"><i class="bi bi-sort-down"></i> SẮP XẾP:</span>
-                        <div class="d-flex gap-2">
-                            <select id="sap-xep-san-pham" class="form-select form-select-sm"
-                                    style="width: auto; min-height: 38px; border-radius: 8px;" onchange="location = this.value;">
-                                <option value="@u(Model.SelectedCategory, Model.SelectedBrand, Model.PriceRange, null)" @(noiBat ? "selected" : "")>Sản phẩm nổi bật</option>
-                                <option value="@u(Model.SelectedCategory, Model.SelectedBrand, Model.PriceRange, "gia-tang")" @(Model.SortBy == "gia-tang" ? "selected" : "")>Giá thấp đến cao</option>
-                                <option value="@u(Model.SelectedCategory, Model.SelectedBrand, Model.PriceRange, "gia-giam")" @(Model.SortBy == "gia-giam" ? "selected" : "")>Giá cao đến thấp</option>
-                                <option value="@u(Model.SelectedCategory, Model.SelectedBrand, Model.PriceRange, "giam-gia")" @(Model.SortBy == "giam-gia" ? "selected" : "")>Đang giảm giá</option>
-                            </select>
-
-                            <select id="loc-khoang-gia" class="form-select form-select-sm"
-                                    style="width: auto; min-height: 38px; border-radius: 8px;" onchange="location = this.value;">
-                                <option value="@u(Model.SelectedCategory, Model.SelectedBrand, null, Model.SortBy)" @(tatCaGia ? "selected" : "")>Mọi mức giá</option>
-                                <option value="@u(Model.SelectedCategory, Model.SelectedBrand, "duoi-2-trieu", Model.SortBy)" @(Model.PriceRange == "duoi-2-trieu" ? "selected" : "")>Dưới 2.000.000đ</option>
-                                <option value="@u(Model.SelectedCategory, Model.SelectedBrand, "tu-2-den-3-trieu", Model.SortBy)" @(Model.PriceRange == "tu-2-den-3-trieu" ? "selected" : "")>2.000.000đ - 3.000.000đ</option>
-                                <option value="@u(Model.SelectedCategory, Model.SelectedBrand, "tren-3-trieu", Model.SortBy)" @(Model.PriceRange == "tren-3-trieu" ? "selected" : "")>Trên 3.000.000đ</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- LƯỚI SẢN PHẨM -->
+            <!-- CỘT PHẢI: LƯỚI SẢN PHẨM -->
+            <main class="col-lg-9 col-md-8">
                 @if (Model.Products != null && Model.Products.Any())
                 {
                     var products = Model.Products.ToList();
@@ -127,28 +111,25 @@
                 }
                 else
                 {
-                    <div class="text-center py-5 bg-white rounded-4 shadow-sm my-4">
+                    <div class="text-center py-5 bg-white rounded-4 shadow-sm my-2 border">
                         <i class="bi bi-search fs-1 text-secondary d-block mb-3"></i>
-                        <h4 class="fw-bold">Không tìm thấy sản phẩm nào</h4>
+                        <h4 class="fw-bold text-dark">Không tìm thấy sản phẩm nào</h4>
                         <p class="text-secondary mb-4">Vui lòng thử chọn tiêu chí tìm kiếm hoặc bộ lọc khác.</p>
                         <a href="@Url.Action("Index", "Product")" class="btn btn-dark px-4 py-2 rounded-pill fw-bold">Xem tất cả sản phẩm</a>
                     </div>
                 }
 
-                <!-- XEM THÊM -->
+                <!-- XEM THÊM PHÂN TRANG -->
                 @if (hasMore)
                 {
-                    <div class="khung-xem-them mt-4">
+                    <div class="khung-xem-them mt-4 text-center">
                         <a id="nut-xem-them" class="btn btn-dark px-5 py-2 rounded-pill fw-bold"
-                           href="@(Url.Action("Index", "Product", new { category = Model.SelectedCategory, brand = Model.SelectedBrand, audience = Model.SelectedAudience, price = Model.PriceRange, sort = Model.SortBy, search = Model.SearchKeyword, page = currentPage + 1 }) + "#vi-tri-them")">Xem thêm sản phẩm</a>
+                           href="@(Url.Action("Index", "Product", new { category = Model.SelectedCategory, brand = Model.SelectedBrand, audience = Model.SelectedAudience, price = Model.PriceRange, sort = Model.SortBy, search = Model.SearchKeyword, page = currentPage + 1 }) + "#vi-tri-them")">
+                            Xem thêm sản phẩm
+                        </a>
                     </div>
                 }
-            </div>
+            </main>
         </div>
     </div>
 </section>
-<div id="nen-bo-loc" class="nen-bo-loc" hidden></div>
-
-@section scripts {
-    <script src="@Url.Content("~/assets/js/pages/products.js")"></script>
-}

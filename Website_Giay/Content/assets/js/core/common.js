@@ -1017,6 +1017,6 @@ function initChatBox() {
 document.addEventListener("DOMContentLoaded", function () {
   initChatBox();
   veTrangThaiNguoiDung(); 
-  khoiTaoTrangChiTietSanPham(); 
+  // khoiTaoTrangChiTietSanPham(); // Disabled client-side overwrite, let MVC render 
   veGioHang();
 });

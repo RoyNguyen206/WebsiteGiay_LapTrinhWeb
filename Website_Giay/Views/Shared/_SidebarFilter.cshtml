@@ -1,0 +1,86 @@
+@model Website_Giay.ViewModels.ProductListViewModel
+@{
+    var currentBrand = Model != null ? Model.SelectedBrand : Request.QueryString["brand"];
+    var currentCategory = Model != null ? Model.SelectedCategory : Request.QueryString["category"];
+    var currentAudience = Model != null ? Model.SelectedAudience : Request.QueryString["audience"];
+    var currentPrice = Model != null ? Model.PriceRange : Request.QueryString["price"];
+    var currentSort = Model != null ? Model.SortBy : Request.QueryString["sort"];
+    var currentSearch = Model != null ? Model.SearchKeyword : Request.QueryString["search"];
+
+    string[] brands = new string[] { "Nike", "Adidas", "Converse", "Puma", "New Balance" };
+    string[] categories = new string[] { "Giày", "Dép", "Nón", "Phụ kiện" };
+}
+
+<div class="hop-bo-loc bg-white p-3 p-xl-4 rounded-4 shadow-sm border" style="border-color: #f1f5f9;">
+    <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+        <h3 class="fs-5 fw-bold mb-0 text-dark">Bộ lọc</h3>
+        <a href="@Url.Action("Index", "Product")" class="btn btn-sm btn-light border rounded-pill px-3 py-1 text-secondary" style="font-size: 13px;">
+            Xóa lọc
+        </a>
+    </div>
+
+    @using (Html.BeginForm("Index", "Product", FormMethod.Get, new { id = "form-bo-loc-trai" }))
+    {
+        if (!string.IsNullOrEmpty(currentSearch))
+        {
+            <input type="hidden" name="search" value="@currentSearch" />
+        }
+        if (!string.IsNullOrEmpty(currentSort))
+        {
+            <input type="hidden" name="sort" value="@currentSort" />
+        }
+
+        <!-- 1. THƯƠNG HIỆU -->
+        <div class="nhom-bo-loc mb-4">
+            <h4 class="fw-bold text-dark text-uppercase mb-2" style="font-size: 13px; letter-spacing: 0.5px;">THƯƠNG HIỆU</h4>
+            <div class="d-flex flex-column gap-1">
+                @foreach (var b in brands)
+                {
+                    bool isChecked = string.Equals(currentBrand, b, StringComparison.OrdinalIgnoreCase);
+                    <label class="d-flex align-items-center p-2 rounded-3 text-secondary filter-radio-pill @(isChecked ? "active-filter-pill" : "")" style="cursor: pointer; transition: all 0.2s;">
+                        <input type="radio" name="brand" value="@b" @(isChecked ? "checked" : "") class="form-check-input mt-0 me-2" onchange="document.getElementById('form-bo-loc-trai').submit();">
+                        <span class="fw-medium text-dark" style="font-size: 14px;">@b</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <!-- 2. LOẠI SẢN PHẨM -->
+        <div class="nhom-bo-loc mb-4">
+            <h4 class="fw-bold text-dark text-uppercase mb-2" style="font-size: 13px; letter-spacing: 0.5px;">LOẠI SẢN PHẨM</h4>
+            <div class="d-flex flex-column gap-1">
+                @foreach (var c in categories)
+                {
+                    bool isChecked = string.Equals(currentCategory, c, StringComparison.OrdinalIgnoreCase);
+                    <label class="d-flex align-items-center p-2 rounded-3 text-secondary filter-radio-pill @(isChecked ? "active-filter-pill" : "")" style="cursor: pointer; transition: all 0.2s;">
+                        <input type="radio" name="category" value="@c" @(isChecked ? "checked" : "") class="form-check-input mt-0 me-2" onchange="document.getElementById('form-bo-loc-trai').submit();">
+                        <span class="fw-medium text-dark" style="font-size: 14px;">@c</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <!-- 3. KHOẢNG GIÁ -->
+        <div class="nhom-bo-loc mb-4">
+            <h4 class="fw-bold text-dark text-uppercase mb-2" style="font-size: 13px; letter-spacing: 0.5px;">KHOẢNG GIÁ</h4>
+            <div class="d-flex flex-column gap-1">
+                <label class="d-flex align-items-center p-2 rounded-3 text-secondary filter-radio-pill @(currentPrice == "duoi-2-trieu" ? "active-filter-pill" : "")" style="cursor: pointer;">
+                    <input type="radio" name="price" value="duoi-2-trieu" @(currentPrice == "duoi-2-trieu" ? "checked" : "") class="form-check-input mt-0 me-2" onchange="document.getElementById('form-bo-loc-trai').submit();">
+                    <span class="fw-medium text-dark" style="font-size: 14px;">Dưới 2.000.000đ</span>
+                </label>
+                <label class="d-flex align-items-center p-2 rounded-3 text-secondary filter-radio-pill @(currentPrice == "tu-2-den-3-trieu" ? "active-filter-pill" : "")" style="cursor: pointer;">
+                    <input type="radio" name="price" value="tu-2-den-3-trieu" @(currentPrice == "tu-2-den-3-trieu" ? "checked" : "") class="form-check-input mt-0 me-2" onchange="document.getElementById('form-bo-loc-trai').submit();">
+                    <span class="fw-medium text-dark" style="font-size: 14px;">2.000.000đ - 3.000.000đ</span>
+                </label>
+                <label class="d-flex align-items-center p-2 rounded-3 text-secondary filter-radio-pill @(currentPrice == "tren-3-trieu" ? "active-filter-pill" : "")" style="cursor: pointer;">
+                    <input type="radio" name="price" value="tren-3-trieu" @(currentPrice == "tren-3-trieu" ? "checked" : "") class="form-check-input mt-0 me-2" onchange="document.getElementById('form-bo-loc-trai').submit();">
+                    <span class="fw-medium text-dark" style="font-size: 14px;">Trên 3.000.000đ</span>
+                </label>
+            </div>
+        </div>
+
+        <button type="submit" class="btn text-white fw-bold w-100 py-2 rounded-3 shadow-sm" style="background-color: #f97316;">
+            Áp dụng bộ lọc
+        </button>
+    }
+</div>

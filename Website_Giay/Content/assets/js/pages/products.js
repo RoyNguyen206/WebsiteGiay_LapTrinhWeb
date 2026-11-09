@@ -23,8 +23,8 @@
   }
  
   function initProductsPage() { 
-    apDungThamSoTrangSanPham(); 
-    veSanPham(); 
+    // apDungThamSoTrangSanPham(); 
+    // veSanPham(); // Disabled client overwrite, let Razor render 
     veGioHang(); 
     veTrangThaiNguoiDung(); 
     khoiTaoNutLoc();

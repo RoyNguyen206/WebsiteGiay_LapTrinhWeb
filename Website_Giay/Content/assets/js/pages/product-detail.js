@@ -5,10 +5,10 @@
   }
 
   function initProductDetailPage() {
-    khoiTaoTrangChiTietSanPham();
+    // khoiTaoTrangChiTietSanPham();
     veGioHang();
     veTrangThaiNguoiDung();
-    renderRelatedProducts();
+    // renderRelatedProducts();
     renderReviews();
     const nhomMau = document.querySelector("#nhom-mau-sac");
     if (nhomMau) {

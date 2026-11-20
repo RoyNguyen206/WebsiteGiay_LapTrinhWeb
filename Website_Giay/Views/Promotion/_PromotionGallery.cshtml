@@ -1,0 +1,74 @@
+﻿
+@model IEnumerable<Website_Giay.Models.Promotion>
+@using System.Linq
+
+<section class="shoe-events-section">
+
+    <div class="shoe-events-container">
+
+        <div class="shoe-events-header">
+
+            <span class="shoe-events-subtitle">
+                SOLESTYLE SNEAKER STORE
+            </span>
+
+            <h2 class="shoe-events-title">
+                ƯU ĐÃI & SỰ KIỆN
+            </h2>
+
+            <p class="shoe-events-description">
+                Cập nhật những chương trình khuyến mãi
+                và bộ sưu tập giày nổi bật nhất từ SoleStyle.
+            </p>
+
+        </div>
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="shoe-gallery">
+
+                @foreach (var item in Model)
+                {
+                    <div class="shoe-gallery-item"
+                         tabindex="0">
+
+                        <img class="shoe-gallery-image"
+                             src="@Url.Content(item.ImageUrl)"
+                             alt="@item.Title"
+                             loading="lazy" />
+
+                        <div class="shoe-gallery-overlay">
+
+                            <div class="shoe-gallery-content">
+
+                                <span class="shoe-gallery-badge">
+                                    SOLESTYLE
+                                </span>
+
+                                <h3>
+                                    @item.Title
+                                </h3>
+
+                                <p>
+                                    @item.Description
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                }
+
+            </div>
+        }
+        else
+        {
+            <p class="text-center">
+                Hiện chưa có chương trình ưu đãi.
+            </p>
+        }
+
+    </div>
+
+</section>

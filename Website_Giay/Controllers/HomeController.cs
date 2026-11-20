@@ -10,7 +10,7 @@ namespace Website_Giay.Controllers
 {
     public class HomeController : Controller
     {
-        private ShoeStoreDbContext db = new ShoeStoreDbContext();
+        private ShoeStoreDBEntities db = new ShoeStoreDBEntities();
 
         public ActionResult Index()
         {

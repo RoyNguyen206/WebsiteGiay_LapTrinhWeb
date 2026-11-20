@@ -56,6 +56,8 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -127,17 +129,57 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\AdminPromotionController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Models\Brand.cs" />
-    <Compile Include="Models\Category.cs" />
-    <Compile Include="Models\Product.cs" />
-    <Compile Include="Models\ProductColor.cs" />
-    <Compile Include="Models\ProductSize.cs" />
-    <Compile Include="Models\User.cs" />
-    <Compile Include="Models\Order.cs" />
-    <Compile Include="Models\OrderDetail.cs" />
-    <Compile Include="Models\ShoeStoreDbContext.cs" />
-    <Compile Include="Models\ShoeStoreDbInitializer.cs" />
+    <Compile Include="Controllers\PromotionController.cs" />
+    <Compile Include="Models\Brand.cs">
+      <DependentUpon>ShoeStoreDb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Category.cs">
+      <DependentUpon>ShoeStoreDb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\C__MigrationHistory.cs">
+      <DependentUpon>ShoeStoreDb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Product.cs">
+      <DependentUpon>ShoeStoreDb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ProductColor.cs">
+      <DependentUpon>ShoeStoreDb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ProductSize.cs">
+      <DependentUpon>ShoeStoreDb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Promotion.cs">
+      <DependentUpon>ShoeStoreDb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ShoeStoreDb.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ShoeStoreDb.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ShoeStoreDb.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ShoeStoreDb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ShoeStoreDb.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ShoeStoreDb.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Models\sysdiagram.cs">
+      <DependentUpon>ShoeStoreDb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\User.cs">
+      <DependentUpon>ShoeStoreDb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Order.cs">
+      <DependentUpon>ShoeStoreDb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\OrderDetail.cs">
+      <DependentUpon>ShoeStoreDb.tt</DependentUpon>
+    </Compile>
     <Compile Include="ViewModels\ProductViewModels.cs" />
     <Compile Include="ViewModels\HomeViewModel.cs" />
     <Compile Include="ViewModels\CartViewModels.cs" />
@@ -165,6 +207,7 @@
     <Content Include="Content\assets\css\pages\product-detail.css" />
     <Content Include="Content\assets\css\pages\products.css" />
     <Content Include="Content\assets\css\pages\profile.css" />
+    <Content Include="Content\assets\css\pages\promotion.css" />
     <Content Include="Content\assets\img\AdidasUltraboost2026.png" />
     <Content Include="Content\assets\img\ADIFOM_Iinfinity_Mules_Black_KJ9516_01_00_standard.png" />
     <Content Include="Content\assets\img\ADIFOM_Iinfinity_Mules_Black_KJ9516_01_00_standard_2.png" />
@@ -239,6 +282,16 @@
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Models\ShoeStoreDb.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>ShoeStoreDb.edmx</DependentUpon>
+      <LastGenOutput>ShoeStoreDb.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="Models\ShoeStoreDb.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>ShoeStoreDb.edmx</DependentUpon>
+      <LastGenOutput>ShoeStoreDb.cs</LastGenOutput>
+    </Content>
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.esm.js" />
@@ -325,6 +378,13 @@
     <Content Include="Content\assets\img\u5309tn_nb_03_i.webp" />
     <Content Include="Content\assets\img\Unwind-NITROcat™-Unisex %281%29_2.avif" />
     <Content Include="Content\assets\img\Unwind-NITROcat™-Unisex.avif" />
+    <EntityDeploy Include="Models\ShoeStoreDb.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>ShoeStoreDb.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <Content Include="Models\ShoeStoreDb.edmx.diagram">
+      <DependentUpon>ShoeStoreDb.edmx</DependentUpon>
+    </Content>
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />
@@ -361,8 +421,12 @@
     <Content Include="Views\Account\Profile.cshtml" />
     <Content Include="Views\Admin\Index.cshtml" />
     <Content Include="App_Data\ShoeStoreDB.sql" />
+    <Content Include="Views\Promotion\_PromotionGallery.cshtml" />
+    <Content Include="Views\AdminPromotion\Index.cshtml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />
     <Content Include="Content\bootstrap.rtl.css.map" />

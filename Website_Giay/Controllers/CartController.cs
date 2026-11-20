@@ -10,7 +10,7 @@ namespace Website_Giay.Controllers
 {
     public class CartController : Controller
     {
-        private ShoeStoreDbContext db = new ShoeStoreDbContext();
+        private ShoeStoreDBEntities db = new ShoeStoreDBEntities();
         private const string CartSessionKey = "SoleStyleCart";
 
         private CartViewModel GetCart()

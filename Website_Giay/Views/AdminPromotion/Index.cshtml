@@ -1,0 +1,1150 @@
+﻿
+@model IEnumerable<Website_Giay.Models.Promotion>
+@using System.Linq
+
+@{
+    Layout = null;
+    ViewBag.Title = "Quản lý sự kiện";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1" />
+
+    <title>Quản lý sự kiện | SoleStyle Admin</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+          rel="stylesheet" />
+
+    <link rel="stylesheet"
+          href="@Url.Content("~/assets/css/base.css")" />
+
+    <link rel="stylesheet"
+          href="@Url.Content("~/assets/css/pages/admin.css")" />
+
+    <style>
+
+        /* =====================================
+           GIAO DIEN QUAN LY SU KIEN
+        ===================================== */
+
+        .promotion-thumbnail {
+            width: 80px;
+            height: 65px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .promotion-preview {
+            display: block;
+            width: auto;
+            max-width: 100%;
+            max-height: 180px;
+            object-fit: contain;
+            border-radius: 10px;
+        }
+
+        .promotion-table td {
+            vertical-align: middle;
+        }
+
+        .promotion-table th {
+            white-space: nowrap;
+        }
+
+        .promotion-table td {
+            padding: 14px 12px;
+        }
+
+        .promotion-table .btn {
+            white-space: nowrap;
+        }
+
+        /* =====================================
+           MODAL THEM VA SUA SU KIEN
+        ===================================== */
+
+        .shoe-promotion-modal .modal-dialog {
+            max-width: 850px;
+            width: calc(100% - 32px);
+            height: calc(100vh - 40px);
+            height: calc(100dvh - 40px);
+            margin: 20px auto;
+        }
+
+        .shoe-promotion-modal .modal-content {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            max-height: 100%;
+            overflow: hidden;
+            border: none;
+            border-radius: 18px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.18);
+        }
+
+        /* FORM PHAI CO FLEX DE CUON */
+
+        .shoe-promotion-modal .promotion-form {
+            display: flex;
+            flex-direction: column;
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        /* HEADER CO DINH */
+
+        .shoe-promotion-modal .modal-header {
+            flex: 0 0 auto;
+            background-color: #fff;
+            border-bottom: 1px solid #e9ecef;
+            padding: 20px 25px;
+            z-index: 2;
+        }
+
+        .shoe-promotion-modal .modal-title {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        /* CHI NOI DUNG GIUA DUOC CUON */
+
+        .shoe-promotion-modal .modal-body {
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow-y: auto !important;
+            overflow-x: hidden;
+            overscroll-behavior: contain;
+            padding: 25px;
+            scrollbar-width: thin;
+            scrollbar-color: #adb5bd #f4f4f4;
+        }
+
+        /* FOOTER CO DINH */
+
+        .shoe-promotion-modal .modal-footer {
+            flex: 0 0 auto;
+            background-color: #fff;
+            border-top: 1px solid #e9ecef;
+            padding: 15px 25px;
+            z-index: 2;
+        }
+
+        /* THANH CUON */
+
+        .shoe-promotion-modal .modal-body::-webkit-scrollbar {
+            width: 7px;
+        }
+
+        .shoe-promotion-modal .modal-body::-webkit-scrollbar-track {
+            background: #f4f4f4;
+            border-radius: 10px;
+        }
+
+        .shoe-promotion-modal .modal-body::-webkit-scrollbar-thumb {
+            background: #b0b0b0;
+            border-radius: 10px;
+        }
+
+            .shoe-promotion-modal .modal-body::-webkit-scrollbar-thumb:hover {
+                background: #888;
+            }
+
+        /* INPUT VA LABEL */
+
+        .shoe-promotion-modal .form-label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #222;
+        }
+
+        .shoe-promotion-modal .form-control {
+            border-radius: 10px;
+            padding: 11px 14px;
+            border: 1px solid #d8dee5;
+        }
+
+            .shoe-promotion-modal .form-control:focus {
+                border-color: #0d6efd;
+                box-shadow: 0 0 0 3px rgba(13,110,253,0.12);
+            }
+
+        .shoe-promotion-modal textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* KHUNG ANH HIEN TAI */
+
+        .promotion-image-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 130px;
+            max-height: 210px;
+            padding: 12px;
+            background-color: #f8f9fa;
+            border: 1px dashed #ddd;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        /* NUT */
+
+        .shoe-promotion-modal .modal-footer .btn {
+            min-width: 110px;
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        /* =====================================
+           RESPONSIVE DIEN THOAI
+        ===================================== */
+
+        @@media (max-width: 768px) {
+
+            .shoe-promotion-modal .modal-dialog {
+                max-width: none;
+                width: calc(100% - 20px);
+                height: calc(100vh - 20px);
+                height: calc(100dvh - 20px);
+                margin: 10px auto;
+            }
+
+            .shoe-promotion-modal .modal-header {
+                padding: 15px;
+            }
+
+            .shoe-promotion-modal .modal-body {
+                padding: 15px;
+            }
+
+            .shoe-promotion-modal .modal-footer {
+                padding: 12px 15px;
+            }
+
+            .shoe-promotion-modal .modal-title {
+                font-size: 18px;
+            }
+
+            .promotion-preview {
+                max-height: 140px;
+            }
+
+            .promotion-table {
+                font-size: 13px;
+            }
+        }
+    </style>
+
+</head>
+
+<body data-page="admin">
+
+    <div class="container-fluid">
+
+        <div class="row">
+
+            <!-- =====================================
+                 SIDEBAR ADMIN
+            ===================================== -->
+
+            <nav class="col-md-2 d-none d-md-block sidebar py-4">
+
+                <div class="text-center mb-4">
+
+                    <h4 class="fw-bold">
+                        SoleStyle Admin
+                    </h4>
+
+                    <span class="badge bg-danger">
+                        Hệ thống MVC
+                    </span>
+
+                </div>
+
+                <div class="d-flex flex-column gap-2">
+
+                    <a href="@Url.Action("Index", "Admin")"
+                       class="admin-nav-link">
+
+                        <i class="bi bi-speedometer2 me-2"></i>
+                        Tổng quan
+
+                    </a>
+
+                    <a href="@Url.Action("Index", "Admin")"
+                       class="admin-nav-link">
+
+                        <i class="bi bi-box-seam me-2"></i>
+                        Quản lý sản phẩm
+
+                    </a>
+
+                    <a href="@Url.Action("Index", "AdminPromotion")"
+                       class="admin-nav-link active">
+
+                        <i class="bi bi-calendar-event me-2"></i>
+                        Quản lý sự kiện
+
+                    </a>
+
+                    <a href="@Url.Action("Index", "Home")"
+                       class="admin-nav-link text-info">
+
+                        <i class="bi bi-house me-2"></i>
+                        Về trang chủ shop
+
+                    </a>
+
+                    <hr class="text-secondary" />
+
+                    <a href="@Url.Action("Logout", "Account")"
+                       class="text-danger ps-3">
+
+                        <i class="bi bi-box-arrow-right me-2"></i>
+                        Đăng xuất
+
+                    </a>
+
+                </div>
+
+            </nav>
+
+            <!-- =====================================
+                 NOI DUNG QUAN LY SU KIEN
+            ===================================== -->
+
+            <main class="col-md-10 ms-sm-auto col-lg-10 main-content p-4">
+
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+
+                    <div>
+
+                        <h2 class="fw-bold mb-1">
+                            Quản lý sự kiện
+                        </h2>
+
+                        <p class="text-muted mb-0">
+                            Danh sách ưu đãi và sự kiện của cửa hàng
+                        </p>
+
+                    </div>
+
+                    <button type="button"
+                            class="btn btn-primary"
+                            data-bs-toggle="modal"
+                            data-bs-target="#createPromotionModal">
+
+                        <i class="bi bi-plus-lg me-1"></i>
+                        Thêm sự kiện
+
+                    </button>
+
+                </div>
+
+                <!-- THONG BAO THANH CONG -->
+
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show">
+
+                        @TempData["Success"]
+
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="alert">
+                        </button>
+
+                    </div>
+                }
+
+                <!-- THONG BAO LOI -->
+
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show">
+
+                        @TempData["Error"]
+
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="alert">
+                        </button>
+
+                    </div>
+                }
+
+                <!-- BANG DANH SACH SU KIEN -->
+
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+
+                    <div class="card-body p-0">
+
+                        <div class="table-responsive">
+
+                            <table class="table table-hover promotion-table mb-0">
+
+                                <thead class="table-light">
+
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Hình ảnh</th>
+                                        <th>Tên sự kiện</th>
+                                        <th>Bắt đầu</th>
+                                        <th>Kết thúc</th>
+                                        <th>Thứ tự</th>
+                                        <th>Trạng thái</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+
+                                </thead>
+
+                                <tbody>
+
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+
+                                            <td>
+                                                #@item.PromotionId
+                                            </td>
+
+                                            <td>
+
+                                                <img class="promotion-thumbnail"
+                                                     src="@Url.Content(item.ImageUrl)"
+                                                     alt="@item.Title" />
+
+                                            </td>
+
+                                            <td>
+
+                                                <strong>
+                                                    @item.Title
+                                                </strong>
+
+                                                <div class="small text-muted">
+                                                    @item.Description
+                                                </div>
+
+                                            </td>
+
+                                            <td>
+
+                                                @(item.StartDate.HasValue
+                                                    ? item.StartDate.Value.ToString("dd/MM/yyyy")
+                                                    : "Không giới hạn")
+
+                                            </td>
+
+                                            <td>
+
+                                                @(item.EndDate.HasValue
+                                                    ? item.EndDate.Value.ToString("dd/MM/yyyy")
+                                                    : "Không giới hạn")
+
+                                            </td>
+
+                                            <td>
+                                                @item.DisplayOrder
+                                            </td>
+
+                                            <td>
+
+                                                @if (!item.IsActive)
+                                                {
+                                                    <span class="badge bg-secondary">
+                                                        Đã ẩn
+                                                    </span>
+                                                }
+                                                else if (
+                                                    item.StartDate.HasValue &&
+                                                    item.StartDate.Value > DateTime.Now
+                                                )
+                                                {
+                                                    <span class="badge bg-info text-dark">
+                                                        Sắp diễn ra
+                                                    </span>
+                                                }
+                                                else if (
+                                                    item.EndDate.HasValue &&
+                                                    item.EndDate.Value < DateTime.Now
+                                                )
+                                                {
+                                                    <span class="badge bg-warning text-dark">
+                                                        Đã kết thúc
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-success">
+                                                        Đang hiển thị
+                                                    </span>
+                                                }
+
+                                            </td>
+
+                                            <td>
+
+                                                <div class="d-flex gap-2">
+
+                                                    <!-- NUT SUA -->
+
+                                                    <button type="button"
+                                                            class="btn btn-sm btn-outline-primary edit-promotion-btn"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#editPromotionModal"
+                                                            data-id="@item.PromotionId"
+                                                            data-title="@item.Title"
+                                                            data-description="@item.Description"
+                                                            data-start="@(item.StartDate.HasValue ? item.StartDate.Value.ToString("yyyy-MM-ddTHH:mm") : "")"
+                                                            data-end="@(item.EndDate.HasValue ? item.EndDate.Value.ToString("yyyy-MM-ddTHH:mm") : "")"
+                                                            data-order="@item.DisplayOrder"
+                                                            data-active="@item.IsActive.ToString().ToLowerInvariant()"
+                                                            data-image="@Url.Content(item.ImageUrl)">
+
+                                                        <i class="bi bi-pencil"></i>
+                                                        Sửa
+
+                                                    </button>
+
+                                                    <!-- NUT XOA -->
+
+                                                    @using (Html.BeginForm(
+                                                        "Delete",
+                                                        "AdminPromotion",
+                                                        FormMethod.Post,
+                                                        new
+                                                        {
+                                                            onsubmit = "return confirm('Bạn có chắc muốn xóa sự kiện này?');"
+                                                        }))
+                                                    {
+                                                        @Html.AntiForgeryToken()
+
+                                                        <input type="hidden"
+                                                               name="id"
+                                                               value="@item.PromotionId" />
+
+                                                        <button type="submit"
+                                                                class="btn btn-sm btn-outline-danger">
+
+                                                            <i class="bi bi-trash"></i>
+                                                            Xóa
+
+                                                        </button>
+                                                    }
+
+                                                </div>
+
+                                            </td>
+
+                                        </tr>
+                                    }
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                @if (!Model.Any())
+                {
+                    <p class="text-center text-muted mt-4">
+
+                        Chưa có sự kiện nào.
+                        Hãy chọn Thêm sự kiện.
+
+                    </p>
+                }
+
+            </main>
+
+        </div>
+
+    </div>
+
+    <!-- =====================================
+         MODAL THEM SU KIEN
+    ===================================== -->
+
+    <div class="modal fade shoe-promotion-modal"
+         id="createPromotionModal"
+         tabindex="-1"
+         aria-hidden="true">
+
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+
+            <div class="modal-content">
+
+                @using (Html.BeginForm(
+                    "Create",
+                    "AdminPromotion",
+                    FormMethod.Post,
+                    new
+                    {
+                        enctype = "multipart/form-data",
+                        @class = "promotion-form"
+                    }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <!-- HEADER CO DINH -->
+
+                    <div class="modal-header">
+
+                        <h5 class="modal-title">
+                            Thêm sự kiện mới
+                        </h5>
+
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Đóng">
+                        </button>
+
+                    </div>
+
+                    <!-- NOI DUNG CUON -->
+
+                    <div class="modal-body">
+
+                        <!-- TEN SU KIEN -->
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+                                Tên sự kiện
+                            </label>
+
+                            <input type="text"
+                                   name="Title"
+                                   class="form-control"
+                                   maxlength="200"
+                                   placeholder="Nhập tên sự kiện..."
+                                   required />
+
+                        </div>
+
+                        <!-- MO TA -->
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+                                Mô tả
+                            </label>
+
+                            <textarea name="Description"
+                                      class="form-control"
+                                      rows="3"
+                                      maxlength="1000"
+                                      placeholder="Nhập mô tả sự kiện..."></textarea>
+
+                        </div>
+
+                        <!-- HINH ANH -->
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+                                Hình ảnh sự kiện
+                            </label>
+
+                            <input type="file"
+                                   name="ImageFile"
+                                   id="createImageFile"
+                                   class="form-control"
+                                   accept=".jpg,.jpeg,.png,.webp"
+                                   required />
+
+                            <small class="text-muted">
+                                JPG, PNG, WEBP. Tối đa 5MB.
+                            </small>
+
+                        </div>
+
+                        <!-- XEM TRUOC ANH -->
+
+                        <div class="promotion-image-box mb-3"
+                             id="createImageBox"
+                             style="display:none;">
+
+                            <img id="createImagePreview"
+                                 class="promotion-preview"
+                                 alt="Ảnh xem trước" />
+
+                        </div>
+
+                        <!-- NGAY BAT DAU KET THUC -->
+
+                        <div class="row">
+
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+                                    Ngày bắt đầu
+                                </label>
+
+                                <input type="datetime-local"
+                                       name="StartDate"
+                                       class="form-control" />
+
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+                                    Ngày kết thúc
+                                </label>
+
+                                <input type="datetime-local"
+                                       name="EndDate"
+                                       class="form-control" />
+
+                            </div>
+
+                        </div>
+
+                        <!-- THU TU HIEN THI -->
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+                                Thứ tự hiển thị
+                            </label>
+
+                            <input type="number"
+                                   name="DisplayOrder"
+                                   class="form-control"
+                                   value="1" />
+
+                        </div>
+
+                        <!-- TRANG THAI -->
+
+                        <div class="form-check mb-3">
+
+                            <input type="checkbox"
+                                   class="form-check-input"
+                                   name="IsActive"
+                                   value="true"
+                                   id="createIsActive"
+                                   checked />
+
+                            <label class="form-check-label"
+                                   for="createIsActive">
+
+                                Hiển thị sự kiện
+
+                            </label>
+
+                        </div>
+
+                    </div>
+
+                    <!-- FOOTER CO DINH -->
+
+                    <div class="modal-footer">
+
+                        <button type="button"
+                                class="btn btn-secondary"
+                                data-bs-dismiss="modal">
+
+                            Hủy
+
+                        </button>
+
+                        <button type="submit"
+                                class="btn btn-primary">
+
+                            <i class="bi bi-save me-1"></i>
+                            Lưu sự kiện
+
+                        </button>
+
+                    </div>
+                }
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- =====================================
+         MODAL CHINH SUA SU KIEN
+    ===================================== -->
+
+    <div class="modal fade shoe-promotion-modal"
+         id="editPromotionModal"
+         tabindex="-1"
+         aria-hidden="true">
+
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+
+            <div class="modal-content">
+
+                @using (Html.BeginForm(
+                    "Edit",
+                    "AdminPromotion",
+                    FormMethod.Post,
+                    new
+                    {
+                        enctype = "multipart/form-data",
+                        @class = "promotion-form"
+                    }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden"
+                           name="PromotionId"
+                           id="editPromotionId" />
+
+                    <!-- HEADER CO DINH -->
+
+                    <div class="modal-header">
+
+                        <h5 class="modal-title">
+                            Chỉnh sửa sự kiện
+                        </h5>
+
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Đóng">
+                        </button>
+
+                    </div>
+
+                    <!-- NOI DUNG CUON -->
+
+                    <div class="modal-body">
+
+                        <!-- TEN SU KIEN -->
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+                                Tên sự kiện
+                            </label>
+
+                            <input type="text"
+                                   name="Title"
+                                   id="editTitle"
+                                   maxlength="200"
+                                   class="form-control"
+                                   required />
+
+                        </div>
+
+                        <!-- MO TA -->
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+                                Mô tả
+                            </label>
+
+                            <textarea name="Description"
+                                      id="editDescription"
+                                      maxlength="1000"
+                                      class="form-control"
+                                      rows="3"></textarea>
+
+                        </div>
+
+                        <!-- ANH HIEN TAI -->
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+                                Ảnh hiện tại
+                            </label>
+
+                            <div class="promotion-image-box">
+
+                                <img id="editImagePreview"
+                                     class="promotion-preview"
+                                     alt="Ảnh sự kiện hiện tại" />
+
+                            </div>
+
+                        </div>
+
+                        <!-- THAY ANH MOI -->
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+                                Thay ảnh mới (không bắt buộc)
+                            </label>
+
+                            <input type="file"
+                                   name="ImageFile"
+                                   id="editImageFile"
+                                   class="form-control"
+                                   accept=".jpg,.jpeg,.png,.webp" />
+
+                            <small class="text-muted">
+                                Để trống nếu muốn giữ ảnh cũ.
+                            </small>
+
+                        </div>
+
+                        <!-- NGAY BAT DAU VA KET THUC -->
+
+                        <div class="row">
+
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+                                    Ngày bắt đầu
+                                </label>
+
+                                <input type="datetime-local"
+                                       name="StartDate"
+                                       id="editStartDate"
+                                       class="form-control" />
+
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+                                    Ngày kết thúc
+                                </label>
+
+                                <input type="datetime-local"
+                                       name="EndDate"
+                                       id="editEndDate"
+                                       class="form-control" />
+
+                            </div>
+
+                        </div>
+
+                        <!-- THU TU -->
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+                                Thứ tự hiển thị
+                            </label>
+
+                            <input type="number"
+                                   name="DisplayOrder"
+                                   id="editDisplayOrder"
+                                   class="form-control" />
+
+                        </div>
+
+                        <!-- HIEN THI SU KIEN -->
+
+                        <div class="form-check mb-3">
+
+                            <input type="checkbox"
+                                   name="IsActive"
+                                   value="true"
+                                   id="editIsActive"
+                                   class="form-check-input" />
+
+                            <label class="form-check-label"
+                                   for="editIsActive">
+
+                                Hiển thị sự kiện
+
+                            </label>
+
+                        </div>
+
+                    </div>
+
+                    <!-- FOOTER CO DINH -->
+
+                    <div class="modal-footer">
+
+                        <button type="button"
+                                class="btn btn-secondary"
+                                data-bs-dismiss="modal">
+
+                            Hủy
+
+                        </button>
+
+                        <button type="submit"
+                                class="btn btn-primary">
+
+                            <i class="bi bi-check-lg me-1"></i>
+                            Lưu thay đổi
+
+                        </button>
+
+                    </div>
+                }
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- =====================================
+         BOOTSTRAP JAVASCRIPT
+    ===================================== -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+
+        // =====================================
+        // TU DONG DIEN DU LIEU KHI BAM SUA
+        // =====================================
+
+        document.querySelectorAll(".edit-promotion-btn")
+            .forEach(function (button) {
+
+                button.addEventListener("click", function () {
+
+                    const data = this.dataset;
+
+                    document.getElementById("editPromotionId").value =
+                        data.id;
+
+                    document.getElementById("editTitle").value =
+                        data.title;
+
+                    document.getElementById("editDescription").value =
+                        data.description;
+
+                    document.getElementById("editStartDate").value =
+                        data.start;
+
+                    document.getElementById("editEndDate").value =
+                        data.end;
+
+                    document.getElementById("editDisplayOrder").value =
+                        data.order;
+
+                    document.getElementById("editIsActive").checked =
+                        data.active === "true";
+
+                    document.getElementById("editImagePreview").src =
+                        data.image;
+
+                    // Xoa file da chon truoc do
+
+                    document.getElementById("editImageFile").value = "";
+
+                    // Dua thanh cuon ve dau
+
+                    const modalBody =
+                        document.querySelector(
+                            "#editPromotionModal .modal-body"
+                        );
+
+                    if (modalBody) {
+                        modalBody.scrollTop = 0;
+                    }
+
+                });
+
+            });
+
+
+        // =====================================
+        // XEM TRUOC ANH KHI THEM SU KIEN
+        // =====================================
+
+        document.getElementById("createImageFile")
+            .addEventListener("change", function () {
+
+                const file = this.files[0];
+
+                const box =
+                    document.getElementById("createImageBox");
+
+                const img =
+                    document.getElementById("createImagePreview");
+
+                if (!file) {
+                    box.style.display = "none";
+                    img.removeAttribute("src");
+                    return;
+                }
+
+                const url = URL.createObjectURL(file);
+
+                img.onload = function () {
+                    URL.revokeObjectURL(url);
+                };
+
+                img.src = url;
+                box.style.display = "flex";
+
+            });
+
+
+        // =====================================
+        // XEM TRUOC ANH KHI SUA SU KIEN
+        // =====================================
+
+        document.getElementById("editImageFile")
+            .addEventListener("change", function () {
+
+                const file = this.files[0];
+
+                if (!file) {
+                    return;
+                }
+
+                const img =
+                    document.getElementById("editImagePreview");
+
+                const url = URL.createObjectURL(file);
+
+                img.onload = function () {
+                    URL.revokeObjectURL(url);
+                };
+
+                img.src = url;
+
+            });
+
+
+        // =====================================
+        // DAT THANH CUON VE DAU KHI MO MODAL
+        // =====================================
+
+        document.querySelectorAll(".shoe-promotion-modal")
+            .forEach(function (modal) {
+
+                modal.addEventListener("shown.bs.modal", function () {
+
+                    const body = modal.querySelector(".modal-body");
+
+                    if (body) {
+                        body.scrollTop = 0;
+                    }
+
+                });
+
+            });
+
+    </script>
+
+</body>
+</html>

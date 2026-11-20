@@ -10,7 +10,7 @@ namespace Website_Giay.Controllers
 {
     public class AccountController : Controller
     {
-        private ShoeStoreDbContext db = new ShoeStoreDbContext();
+        private ShoeStoreDBEntities db = new ShoeStoreDBEntities();
 
         public ActionResult Login(string returnUrl)
         {
@@ -32,7 +32,7 @@ namespace Website_Giay.Controllers
 
             try
             {
-                var user = db.Users.FirstOrDefault(u => u.Email.Equals(model.Email, StringComparison.OrdinalIgnoreCase) && u.Password == model.Password);
+                var user = db.Users.FirstOrDefault(u => u.Email == model.Email && u.Password == model.Password);
 
                 if (user != null)
                 {
@@ -107,7 +107,7 @@ namespace Website_Giay.Controllers
 
             try
             {
-                if (db.Users.Any(u => u.Email.Equals(model.Email, StringComparison.OrdinalIgnoreCase)))
+                if (db.Users.Any(u => u.Email == model.Email))
                 {
                     ModelState.AddModelError("Email", "Email này đã được sử dụng.");
                     return View(model);

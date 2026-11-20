@@ -1,0 +1,159 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,800;1,800&display=swap');
+
+/* Bố cục riêng cho thẻ 3D và logo; không tác động home.css */
+.khu-thuong-hieu .luoi-thuong-hieu-3d {
+    display: grid;
+    grid-template-columns: repeat(5, 220px);
+    justify-content: space-between;
+    column-gap: 10px;
+    row-gap: 30px;
+    margin-top: 28px;
+}
+
+.khu-thuong-hieu .cot-thuong-hieu {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    min-width: 0;
+}
+
+.khu-thuong-hieu .cot-thuong-hieu > .nut-thuong-hieu {
+    width: 100%;
+}
+
+/* Giữ nguyên kích thước và 3D của bản gốc, chỉ giới hạn phạm vi CSS */
+.khu-thuong-hieu .the-giay-3d,
+.khu-thuong-hieu .the-giay-3d * {
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    transition: 0.3s ease-in-out;
+}
+
+.khu-thuong-hieu .the-giay-3d {
+    position: relative;
+    width: 220px;
+    height: 340px;
+    border-radius: 12px;
+    color: #fff;
+    transform-style: preserve-3d;
+    flex: none;
+}
+
+.khu-thuong-hieu .the-giay-3d.peach { background: linear-gradient(135deg, #FFB6A3, #C65A78); }
+.khu-thuong-hieu .the-giay-3d.blue { background: linear-gradient(135deg, #09AFFF, #125575); }
+.khu-thuong-hieu .the-giay-3d.purple { background: linear-gradient(135deg, #5911F2, #290987); }
+.khu-thuong-hieu .the-giay-3d.teal { background: linear-gradient(135deg, #00C9A7, #086B70); }
+.khu-thuong-hieu .the-giay-3d.yellow { background: linear-gradient(135deg, #FFF0AD, #D9B65C); }
+
+.khu-thuong-hieu .the-giay-3d .product {
+    height: 85%;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    position: relative;
+    transform-style: preserve-3d;
+}
+
+.khu-thuong-hieu .the-giay-3d .product .number {
+    font-size: 80px;
+    line-height: 80px;
+    font-weight: 800;
+    font-style: italic;
+    color: #fff;
+    opacity: 0.25;
+}
+
+.khu-thuong-hieu .the-giay-3d .product .sneakers {
+    font-size: 35px;
+    line-height: 35px;
+    font-weight: 800;
+    font-style: italic;
+    color: #fff;
+    opacity: 0.7;
+}
+
+.khu-thuong-hieu .the-giay-3d .product img {
+    height: 280px;
+    width: auto;
+    max-width: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate3d(-35%, -45%, 0);
+    pointer-events: none;
+}
+
+.khu-thuong-hieu .the-giay-3d .product .price {
+    background: rgba(255, 255, 255, 0.15);
+    margin-top: auto;
+    margin-left: auto;
+    margin-right: -20px;
+    padding: 5px 20px;
+    border-radius: 99px 0 0 99px;
+    color: #fff;
+    font-weight: 800;
+}
+
+.khu-thuong-hieu .the-giay-3d .title {
+    height: 15%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0 0 12px 12px;
+    transform-style: preserve-3d;
+}
+
+.khu-thuong-hieu .the-giay-3d.blue .title { background: #039BE5; }
+.khu-thuong-hieu .the-giay-3d.purple .title { background: #5B1AE3; }
+
+.khu-thuong-hieu .the-giay-3d .title h2,
+.khu-thuong-hieu .the-giay-3d .title h3 {
+    margin: 0;
+    color: #fff;
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1.2;
+    text-align: center;
+}
+
+.khu-thuong-hieu .the-giay-3d:hover .product img {
+    transform: translate3d(-50%, -40%, 80px);
+}
+
+.khu-thuong-hieu .the-giay-3d:hover .product .number {
+    transform: translateZ(40px);
+    opacity: 1;
+}
+
+.khu-thuong-hieu .the-giay-3d:hover .product .sneakers {
+    transform: translateZ(40px);
+    opacity: 0.85;
+}
+
+.khu-thuong-hieu .the-giay-3d:hover .product .price { transform: translateZ(20px); }
+.khu-thuong-hieu .the-giay-3d:hover .title h2,
+.khu-thuong-hieu .the-giay-3d:hover .title h3 { transform: translateZ(20px); }
+
+/* Chỉ thay số cột khi màn hình không đủ chỗ cho thẻ 220px */
+@media (max-width: 1199.98px) {
+    .khu-thuong-hieu .luoi-thuong-hieu-3d {
+        grid-template-columns: repeat(3, 220px);
+        justify-content: space-around;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .khu-thuong-hieu .luoi-thuong-hieu-3d {
+        grid-template-columns: repeat(2, 220px);
+        justify-content: space-around;
+    }
+}
+
+@media (max-width: 499.98px) {
+    .khu-thuong-hieu .luoi-thuong-hieu-3d {
+        grid-template-columns: 220px;
+        justify-content: center;
+    }
+}

@@ -14,6 +14,7 @@
 
 @section styles {
     <link rel="stylesheet" href="@Url.Content("~/assets/css/pages/home.css")">
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/pages/style3d.css")">
 }
 <!-- HERO SLIDER -->
 <section class="hero-slider" aria-label="Sản phẩm nổi bật">
@@ -72,6 +73,7 @@
     <!-- Chấm tròn chuyển slide -->
     <div class="slider-dots" id="sliderDots" aria-label="Chọn banner"></div>
 </section>
+
 <!-- THƯƠNG HIỆU -->
 <section id="khu-uu-dai" class="khu-thuong-hieu" aria-label="Lọc theo thương hiệu">
     <div class="container">
@@ -80,21 +82,61 @@
                 <p class="chu-nho">Thương hiệu</p>
                 <h2>Chọn nhanh theo logo</h2>
             </div>
-            <a class="btn btn-outline-dark" href="@Url.Action("Index", "Product")">Tất cả sản phẩm</a>
+            <a class="btn btn-outline-dark" href="@Url.Action("Index", "Product")">
+                Tất cả sản phẩm
+            </a>
         </div>
-        <div class="hang-thuong-hieu">
-            @foreach (var b in Model.Brands)
+
+        <!-- DANH SÁCH THẺ GIÀY 3D VÀ LOGO -->
+        <div class="luoi-thuong-hieu-3d">
+            @{
+                var danhSachGiay = new[]
+                {
+                    new { Mau = "peach", So = "01", Ten = "NIKE SNEAKERS", Gia = "$49.9", Hinh = "~/assets/img/nike-purple.png", TieuDe = "Nike Purple" },
+                    new { Mau = "blue", So = "02", Ten = "ADIDAS SNEAKERS", Gia = "$49.9", Hinh = "~/assets/img/adidas.png", TieuDe = "Adidas" },
+                    new { Mau = "yellow", So = "03", Ten = "CONVERSE SNEAKERS", Gia = "$49.9", Hinh = "~/assets/img/red-converse.png", TieuDe = "Converse Red" },
+                    new { Mau = "teal", So = "04", Ten = "PUMA SNEAKERS", Gia = "$49.9", Hinh = "~/assets/img/puma-white .png", TieuDe = "Puma White" },
+                    new { Mau = "purple", So = "05", Ten = "BALANCE SNEAKERS", Gia = "$49.9", Hinh = "~/assets/img/balance.png", TieuDe = "New Balance" }
+
+                };
+
+                var thuongHieu = Model.Brands.ToList();
+            }
+
+            @for (int i = 0; i < thuongHieu.Count; i++)
             {
-                <a class="nut-thuong-hieu text-decoration-none" href="@Url.Action("Index", "Product", new { brand = b.BrandName })">
-                    <span class="khung-logo-thuong-hieu">
-                        <img src="@Url.Content(b.LogoUrl ?? "~/assets/img/logoNike.png")" alt="@b.BrandName">
-                    </span>
-                    <span>@b.BrandName</span>
-                </a>
+                var b = thuongHieu[i];
+                var giay = danhSachGiay[i % danhSachGiay.Length];
+
+                <div class="cot-thuong-hieu">
+                    <!-- THẺ GIÀY 3D -->
+                    <div class="the-giay-3d @giay.Mau">
+                        <div class="product">
+                            <span class="number">@giay.So</span>
+                            <span class="sneakers">@giay.Ten</span>
+                            <span class="price">@giay.Gia</span>
+                            <img src="@Url.Content(giay.Hinh)" alt="@giay.TieuDe">
+                        </div>
+                        <div class="title">
+                            <h2>@giay.TieuDe</h2>
+                        </div>
+                    </div>
+
+                    <!-- LOGO THƯƠNG HIỆU HIỆN TẠI -->
+                    <a class="nut-thuong-hieu text-decoration-none"
+                       href="@Url.Action("Index", "Product", new { brand = b.BrandName })">
+                        <span class="khung-logo-thuong-hieu">
+                            <img src="@Url.Content(b.LogoUrl ?? "~/assets/img/logoNike.png")"
+                                 alt="@b.BrandName">
+                        </span>
+                        <span>@b.BrandName</span>
+                    </a>
+                </div>
             }
         </div>
     </div>
 </section>
+
 
 <!-- DANH MỤC SẢN PHẨM -->
 <section id="khu-san-pham" class="khu-san-pham py-5">
@@ -194,7 +236,7 @@
     </div>
 </section>
 <div id="nen-bo-loc" class="nen-bo-loc" hidden></div>
-
+@Html.Action("Gallery", "Promotion")
 <!-- FLASH DEAL -->
 @if (Model.FlashDealProducts != null && Model.FlashDealProducts.Any())
 {
@@ -407,8 +449,27 @@
     </div>
 </section>
 
+
 @section scripts {
     <script src="@Url.Content("~/assets/js/data/products.js")"></script>
     <script src="@Url.Content("~/assets/js/core/common.js")"></script>
     <script src="@Url.Content("~/assets/js/pages/home.js")"></script>
+    <script src="@Url.Content("~/assets/js/pages/vanilla-tilt.js")"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            if (typeof VanillaTilt !== "undefined") {
+                VanillaTilt.init(
+                    document.querySelectorAll(".the-giay-3d"),
+                    {
+                        max: 25,
+                        speed: 5000,
+                        glare: true,
+                        "max-glare": 0.5,
+                        scale: 1.03
+                    }
+                );
+            }
+        });
+    </script>
 }
+

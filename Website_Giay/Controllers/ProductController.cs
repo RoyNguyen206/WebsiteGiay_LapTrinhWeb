@@ -10,7 +10,7 @@ namespace Website_Giay.Controllers
 {
     public class ProductController : Controller
     {
-        private ShoeStoreDbContext db = new ShoeStoreDbContext();
+        private ShoeStoreDBEntities db = new ShoeStoreDBEntities();
 
         private const int PageSize = 12;
 
@@ -189,8 +189,8 @@ namespace Website_Giay.Controllers
                 var p = db.Products
                     .Include(x => x.Brand)
                     .Include(x => x.Category)
-                    .Include(x => x.Colors)
-                    .Include(x => x.Sizes)
+                    .Include(x => x.ProductColors)
+                    .Include(x => x.ProductSizes)
                     .FirstOrDefault(x => x.ProductId == id && x.IsActive);
 
                 if (p == null)
@@ -214,13 +214,13 @@ namespace Website_Giay.Controllers
                     Badge = p.Badge,
                     ImageUrl = p.ImageUrl,
                     Description = p.Description,
-                    Colors = p.Colors.Select(c => new ProductColorViewModel
+                    Colors = p.ProductColors.Select(c => new ProductColorViewModel
                     {
                         ColorName = c.ColorName,
                         HexCode = c.HexCode,
                         ImageUrl = c.ImageUrl
                     }).ToList(),
-                    Sizes = p.Sizes.Select(s => s.SizeValue).ToList()
+                    Sizes = p.ProductSizes.Select(s => s.SizeValue).ToList()
                 };
 
                 var related = db.Products

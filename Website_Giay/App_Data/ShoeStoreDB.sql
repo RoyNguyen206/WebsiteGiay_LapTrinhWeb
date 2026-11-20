@@ -635,3 +635,68 @@ INSERT INTO dbo.OrderDetails (OrderId, ProductId, SelectedColor, SelectedSize, Q
 GO
 
 PRINT N'Cơ sở dữ liệu ShoeStoreDB đã được khởi tạo và chèn dữ liệu mẫu thành công!';
+
+
+GO
+
+IF OBJECT_ID('dbo.Promotions', 'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.Promotions
+    (
+        PromotionId INT IDENTITY(1,1) PRIMARY KEY,
+        Title NVARCHAR(200) NOT NULL,
+        Description NVARCHAR(1000) NULL,
+        ImageUrl NVARCHAR(500) NOT NULL,
+        StartDate DATETIME NULL,
+        EndDate DATETIME NULL,
+        DisplayOrder INT NOT NULL DEFAULT 0,
+        IsActive BIT NOT NULL DEFAULT 1,
+        CreatedDate DATETIME NOT NULL DEFAULT GETDATE()
+    );
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM dbo.Promotions)
+BEGIN
+    INSERT INTO dbo.Promotions
+    (
+        Title,
+        Description,
+        ImageUrl,
+        StartDate,
+        EndDate,
+        DisplayOrder,
+        IsActive
+    )
+    VALUES
+    (
+        N'SALE CUỐI TUẦN - GIẢM ĐẾN 30%',
+        N'Khám phá các mẫu giày thể thao yêu thích.',
+        N'~/assets/img/Untitled - June 20, 2026 at 02.06.14 (4) (16).png',
+        NULL, NULL, 1, 1
+    ),
+    (
+        N'ƯU ĐÃI SINH NHẬT - GIẢM ĐẾN 20%',
+        N'Chương trình ưu đãi dành cho khách hàng.',
+        N'~/assets/img/image (5).png',
+        NULL, NULL, 2, 1
+    ),
+    (
+        N'BỘ SƯU TẬP SNEAKER MỚI',
+        N'Cập nhật xu hướng giày thời trang mới.',
+        N'~/assets/img/image (4).png',
+        NULL, NULL, 3, 1
+    ),
+    (
+        N'KHÁM PHÁ PHONG CÁCH STREETWEAR',
+        N'Những mẫu sneaker phù hợp phong cách của bạn.',
+        N'~/assets/img/mr530asm_nb_03_i.webp',
+        NULL, NULL, 4, 1
+    );
+END
+GO
+
+SELECT *
+FROM dbo.Promotions
+ORDER BY DisplayOrder;
+select * from dbo.Users

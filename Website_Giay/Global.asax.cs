@@ -19,8 +19,7 @@ namespace Website_Giay
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
-            // Database Initializer
-            Database.SetInitializer(new ShoeStoreDbInitializer());
+            
         }
     }
 }
